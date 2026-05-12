@@ -1,0 +1,120 @@
+## Set Git attributes for paths including line ending
+## normalization, diff behavior, etc.
+##
+## Get latest from `dotnet new gitattributes`
+
+# Auto detect text files and perform LF normalization
+* text=auto eol=lf
+
+#
+# The above will handle all files NOT found below
+#
+
+*.cs     text eol=lf diff=csharp
+*.cshtml text eol=lf diff=html
+*.csx    text eol=lf diff=csharp
+*.csproj text eol=lf
+*.fsproj text eol=lf
+*.vbproj text eol=lf
+*.props  text eol=lf
+*.targets text eol=lf
+*.config text eol=lf
+*.sln    text eol=crlf
+*.slnx   text eol=crlf
+
+# Content below from: https://github.com/gitattributes/gitattributes/blob/master/Common.gitattributes
+
+# Documents
+*.bibtex   text eol=lf diff=bibtex
+*.doc      diff=astextplain
+*.DOC      diff=astextplain
+*.docx     diff=astextplain
+*.DOCX     diff=astextplain
+*.dot      diff=astextplain
+*.DOT      diff=astextplain
+*.pdf      diff=astextplain
+*.PDF      diff=astextplain
+*.rtf      diff=astextplain
+*.RTF      diff=astextplain
+*.md       text eol=lf diff=markdown
+*.mdx      text eol=lf diff=markdown
+*.tex      text eol=lf diff=tex
+*.adoc     text eol=lf
+*.textile  text eol=lf
+*.mustache text eol=lf
+# Per RFC 4180, .csv should be CRLF
+*.csv      text eol=crlf
+*.tab      text eol=lf
+*.tsv      text eol=lf
+*.txt      text eol=lf
+*.sql      text eol=lf
+*.epub     diff=astextplain
+
+# Graphics
+*.png      binary
+*.jpg      binary
+*.jpeg     binary
+*.gif      binary
+*.tif      binary
+*.tiff     binary
+*.ico      binary
+# SVG treated as text by default.
+*.svg      text eol=lf
+# If you want to treat it as binary,
+# use the following line instead.
+# *.svg    binary
+*.eps      binary
+
+# Scripts
+# Force Unix scripts to always use lf line endings so that if a repo is accessed
+# in Unix via a file share from Windows, the scripts will work
+*.bash     text eol=lf
+*.fish     text eol=lf
+*.ksh      text eol=lf
+*.sh       text eol=lf
+*.zsh      text eol=lf
+# Likewise, force cmd and batch scripts to always use crlf
+*.bat      text eol=crlf
+*.cmd      text eol=crlf
+
+# Serialization
+*.json     text eol=lf
+*.editorconfig text eol=lf
+*.toml     text eol=lf
+*.xml      text eol=lf
+*.yaml     text eol=lf
+*.yml      text eol=lf
+
+# Repository meta/config files
+.gitattributes text eol=lf
+.gitignore text eol=lf
+.csharpierignore text eol=lf
+
+# Archives
+*.7z       binary
+*.bz       binary
+*.bz2      binary
+*.bzip2    binary
+*.gz       binary
+*.lz       binary
+*.lzma     binary
+*.rar      binary
+*.tar      binary
+*.taz      binary
+*.tbz      binary
+*.tbz2     binary
+*.tgz      binary
+*.tlz      binary
+*.txz      binary
+*.xz       binary
+*.Z        binary
+*.zip      binary
+*.zst      binary
+
+# Text files where line endings should be preserved
+*.patch    -text
+
+# Exclude files from exporting
+.gitattributes export-ignore
+.gitignore     export-ignore
+.gitkeep       export-ignore

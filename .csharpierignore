@@ -1,0 +1,5 @@
+# Solution file
+*.slnx
+
+# EF Core generated migration files
+src/SrinilStay.Api/Data/Migrations/
