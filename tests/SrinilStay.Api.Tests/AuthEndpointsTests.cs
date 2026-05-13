@@ -132,6 +132,45 @@ public sealed class AuthEndpointsTests : IAsyncLifetime, IDisposable
     }
 
     [Fact]
+    public async Task ReusingImmediatelyRotatedRefreshTokenWithinGraceDoesNotRevokeFamily()
+    {
+        HttpClient http =
+            client ?? throw new InvalidOperationException("Test client is not initialized.");
+        string email = $"user-{Guid.NewGuid():N}@example.com";
+        AuthRequest request = new(email, "Password1!");
+
+        HttpResponseMessage registerResponse = await http.PostAsJsonAsync(
+            "/auth/register",
+            request
+        );
+        registerResponse.EnsureSuccessStatusCode();
+        string originalCookie = GetRefreshCookie(registerResponse);
+
+        using HttpRequestMessage refreshRequest = CreateRefreshRequest(originalCookie);
+        HttpResponseMessage refreshResponse = await http.SendAsync(refreshRequest);
+        refreshResponse.EnsureSuccessStatusCode();
+        string rotatedCookie = GetRefreshCookie(refreshResponse);
+
+        using HttpRequestMessage graceRequest = CreateRefreshRequest(originalCookie);
+        HttpResponseMessage graceResponse = await http.SendAsync(graceRequest);
+        graceResponse.EnsureSuccessStatusCode();
+
+        TokenResponse? graceToken = await graceResponse.Content.ReadFromJsonAsync<TokenResponse>();
+        Assert.NotNull(graceToken);
+        Assert.False(string.IsNullOrWhiteSpace(graceToken.AccessToken));
+        Assert.DoesNotContain(
+            GetSetCookieHeaders(graceResponse),
+            header =>
+                header.StartsWith($"{RefreshTokenCookieName}=", StringComparison.OrdinalIgnoreCase)
+        );
+
+        using HttpRequestMessage currentRequest = CreateRefreshRequest(rotatedCookie);
+        HttpResponseMessage currentResponse = await http.SendAsync(currentRequest);
+
+        currentResponse.EnsureSuccessStatusCode();
+    }
+
+    [Fact]
     public async Task LogoutRevokesRefreshTokenFamilyAndClearsCookie()
     {
         HttpClient http =
