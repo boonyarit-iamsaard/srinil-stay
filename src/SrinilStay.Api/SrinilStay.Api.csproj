@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AspNetCore.HealthChecks.NpgSql" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
   </ItemGroup>
 </Project>

@@ -1,7 +1,11 @@
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
+string postgresConnectionString =
+    builder.Configuration.GetConnectionString("Postgres")
+    ?? throw new InvalidOperationException("Connection string 'Postgres' is not configured.");
+
 builder.Services.AddOpenApi();
-builder.Services.AddHealthChecks();
+builder.Services.AddHealthChecks().AddNpgSql(postgresConnectionString, name: "postgres");
 
 WebApplication app = builder.Build();
 

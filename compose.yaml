@@ -1,0 +1,45 @@
+name: "srinil-stay"
+
+services:
+  postgres:
+    image: docker.io/postgres:18-alpine
+    container_name: srinil-stay-postgres
+    environment:
+      POSTGRES_DB: srinil-stay
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql
+    networks:
+      - srinil-stay-network
+    healthcheck:
+      test: [CMD-SHELL, pg_isready -U postgres]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: always
+
+  pgadmin:
+    image: docker.io/dpage/pgadmin4:9.3
+    container_name: srinil-stay-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@srinil.com
+      PGADMIN_DEFAULT_PASSWORD: postgres
+    ports:
+      - "8090:80"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - srinil-stay-network
+    restart: unless-stopped
+
+volumes:
+  pgdata:
+    name: srinil-stay-pgdata
+
+networks:
+  srinil-stay-network:
+    name: srinil-stay-network
