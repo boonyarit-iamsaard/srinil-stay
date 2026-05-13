@@ -1,0 +1,36 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: srinil-stay-api:local-production
+    container_name: srinil-stay-api
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_HTTP_PORTS: 8080
+      ConnectionStrings__Postgres: Host=postgres;Port=5432;Database=srinil-stay;Username=postgres;Password=postgres
+      Jwt__Issuer: SrinilStay.Api
+      Jwt__Audience: SrinilStay.Api
+      Jwt__SigningKey: srinil-stay-compose-signing-key-32-chars
+      Jwt__AccessTokenMinutes: 15
+      RefreshTokens__CookieName: srinil_stay_refresh_token
+      RefreshTokens__IdleLifetimeDays: 30
+      RefreshTokens__RotationGraceSeconds: 10
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - srinil-stay-network
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "curl --fail --silent --show-error http://localhost:8080/health || exit 1",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
+    restart: unless-stopped
