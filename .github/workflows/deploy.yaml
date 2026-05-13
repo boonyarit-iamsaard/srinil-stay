@@ -1,0 +1,40 @@
+name: Deploy
+
+on:
+  workflow_run:
+    workflows:
+      - CI
+    types:
+      - completed
+    branches:
+      - main
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: Deploy to Railway
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    if: github.event.workflow_run.conclusion == 'success'
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install Railway CLI
+        run: |
+          curl -fsSL https://github.com/railwayapp/cli/releases/download/v4.42.1/railway-v4.42.1-x86_64-unknown-linux-musl.tar.gz -o railway.tar.gz
+          tar -xzf railway.tar.gz
+          sudo mv railway /usr/local/bin/railway
+
+# TODO: Uncomment to enable automated production deployments to Railway.
+#      - name: Deploy
+#        run: railway up --service api --environment production --detach
+#        env:
+#          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}

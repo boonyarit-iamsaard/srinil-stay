@@ -5,7 +5,7 @@ TEST_PROJECT := tests/SrinilStay.Api.Tests/SrinilStay.Api.Tests.csproj
 
 .DEFAULT_GOAL := help
 
-.PHONY: run up up-build up-infra down down-infra down-clean restore test build publish clean docker-build format format-check help
+.PHONY: run up up-build up-infra down down-infra down-clean restore tools test build publish clean docker-build format format-check help
 
 run: ## Run the API locally
 	dotnet run --project $(API_PROJECT)
@@ -32,11 +32,14 @@ restore: ## Restore NuGet packages
 	dotnet restore $(API_PROJECT)
 	dotnet restore $(TEST_PROJECT)
 
-format: ## Apply .NET formatting
-	dotnet format $(SOLUTION)
+tools: ## Restore local .NET tools
+	dotnet tool restore
 
-format-check: ## Check .NET formatting
-	dotnet format $(SOLUTION) --verify-no-changes
+format: tools ## Apply C# formatting
+	dotnet csharpier format .
+
+format-check: tools ## Check C# formatting
+	dotnet csharpier check .
 
 test: ## Run tests
 	dotnet test $(TEST_PROJECT)

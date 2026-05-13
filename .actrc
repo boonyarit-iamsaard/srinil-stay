@@ -1,0 +1,2 @@
+--env TESTCONTAINERS_RYUK_DISABLED=true
+--env TESTCONTAINERS_HOST_OVERRIDE=host.docker.internal
