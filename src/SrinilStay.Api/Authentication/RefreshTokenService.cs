@@ -10,7 +10,8 @@ namespace SrinilStay.Api.Authentication;
 public sealed class RefreshTokenService(
     ApplicationDbContext dbContext,
     UserManager<IdentityUser> userManager,
-    IOptions<RefreshTokenOptions> refreshTokenOptions
+    IOptions<RefreshTokenOptions> refreshTokenOptions,
+    TimeProvider timeProvider
 )
 {
     private const int RefreshTokenByteCount = 64;
@@ -19,18 +20,14 @@ public sealed class RefreshTokenService(
 
     public async Task<IssuedRefreshToken> IssueAsync(IdentityUser user)
     {
-        DateTimeOffset now = DateTimeOffset.UtcNow;
+        DateTimeOffset now = timeProvider.GetUtcNow();
         string token = CreateToken();
-
-        RefreshToken refreshToken = new()
-        {
-            Id = Guid.NewGuid(),
-            FamilyId = Guid.NewGuid(),
-            UserId = user.Id,
-            TokenHash = HashToken(token),
-            CreatedAt = now,
-            ExpiresAt = now.AddDays(refreshTokenOptions.IdleLifetimeDays),
-        };
+        RefreshToken refreshToken = RefreshTokenFamily.StartForUser(
+            user.Id,
+            HashToken(token),
+            now,
+            refreshTokenOptions
+        );
 
         dbContext.RefreshTokens.Add(refreshToken);
         await dbContext.SaveChangesAsync();
@@ -38,9 +35,9 @@ public sealed class RefreshTokenService(
         return new IssuedRefreshToken(token, refreshToken.ExpiresAt);
     }
 
-    public async Task<RefreshTokenRotationResult?> RotateAsync(string token)
+    public async Task<RefreshTokenRotationResult> RotateAsync(string token)
     {
-        DateTimeOffset now = DateTimeOffset.UtcNow;
+        DateTimeOffset now = timeProvider.GetUtcNow();
         string tokenHash = HashToken(token);
         RefreshToken? refreshToken = await dbContext
             .RefreshTokens.Include(storedToken => storedToken.ReplacedByToken)
@@ -48,13 +45,17 @@ public sealed class RefreshTokenService(
 
         if (refreshToken is null)
         {
-            return null;
+            return new RefreshTokenRotationResult.Rejected(
+                RefreshTokenRotationRejectionReason.UnknownToken
+            );
         }
 
         if (refreshToken.ExpiresAt <= now)
         {
             await RevokeFamilyAsync(refreshToken.FamilyId, now);
-            return null;
+            return new RefreshTokenRotationResult.Rejected(
+                RefreshTokenRotationRejectionReason.ExpiredToken
+            );
         }
 
         if (refreshToken.RevokedAt is not null)
@@ -66,28 +67,23 @@ public sealed class RefreshTokenService(
         if (user is null)
         {
             await RevokeFamilyAsync(refreshToken.FamilyId, now);
-            return null;
+            return new RefreshTokenRotationResult.Rejected(
+                RefreshTokenRotationRejectionReason.MissingUser
+            );
         }
 
         string nextToken = CreateToken();
-        RefreshToken nextRefreshToken = new()
-        {
-            Id = Guid.NewGuid(),
-            FamilyId = refreshToken.FamilyId,
-            UserId = refreshToken.UserId,
-            TokenHash = HashToken(nextToken),
-            CreatedAt = now,
-            ExpiresAt = now.AddDays(refreshTokenOptions.IdleLifetimeDays),
-        };
-
-        refreshToken.LastUsedAt = now;
-        refreshToken.RevokedAt = now;
-        refreshToken.ReplacedByTokenId = nextRefreshToken.Id;
+        RefreshToken nextRefreshToken = RefreshTokenFamily.RotateCurrent(
+            refreshToken,
+            HashToken(nextToken),
+            now,
+            refreshTokenOptions
+        );
 
         dbContext.RefreshTokens.Add(nextRefreshToken);
         await dbContext.SaveChangesAsync();
 
-        return new RefreshTokenRotationResult(
+        return new RefreshTokenRotationResult.Rotated(
             user,
             new IssuedRefreshToken(nextToken, nextRefreshToken.ExpiresAt)
         );
@@ -110,35 +106,40 @@ public sealed class RefreshTokenService(
             return;
         }
 
-        await RevokeFamilyAsync(refreshToken.FamilyId, DateTimeOffset.UtcNow);
+        await RevokeFamilyAsync(refreshToken.FamilyId, timeProvider.GetUtcNow());
     }
 
-    private async Task<RefreshTokenRotationResult?> TryUseGraceTokenAsync(
+    private async Task<RefreshTokenRotationResult> TryUseGraceTokenAsync(
         RefreshToken refreshToken,
         DateTimeOffset now
     )
     {
         if (
-            refreshToken.ReplacedByToken is null
-            || refreshToken.RevokedAt is null
-            || now - refreshToken.RevokedAt.Value
-                > TimeSpan.FromSeconds(refreshTokenOptions.RotationGraceSeconds)
+            !RefreshTokenFamily.CanUseImmediatelyPreviousToken(
+                refreshToken,
+                now,
+                refreshTokenOptions
+            )
         )
         {
             await RevokeFamilyAsync(refreshToken.FamilyId, now);
-            return null;
+            return new RefreshTokenRotationResult.Rejected(
+                RefreshTokenRotationRejectionReason.ReusedTokenOutsideGrace
+            );
         }
 
         IdentityUser? user = await userManager.FindByIdAsync(refreshToken.UserId);
-        if (user is null || refreshToken.ReplacedByToken.ExpiresAt <= now)
+        if (user is null)
         {
             await RevokeFamilyAsync(refreshToken.FamilyId, now);
-            return null;
+            return new RefreshTokenRotationResult.Rejected(
+                RefreshTokenRotationRejectionReason.MissingUser
+            );
         }
 
-        return new RefreshTokenRotationResult(
+        return new RefreshTokenRotationResult.GraceAccepted(
             user,
-            new IssuedRefreshToken(null, refreshToken.ReplacedByToken.ExpiresAt)
+            refreshToken.ReplacedByToken!.ExpiresAt
         );
     }
 
@@ -170,6 +171,4 @@ public sealed class RefreshTokenService(
     }
 }
 
-public sealed record IssuedRefreshToken(string? Value, DateTimeOffset ExpiresAt);
-
-public sealed record RefreshTokenRotationResult(IdentityUser User, IssuedRefreshToken RefreshToken);
+public sealed record IssuedRefreshToken(string Value, DateTimeOffset ExpiresAt);

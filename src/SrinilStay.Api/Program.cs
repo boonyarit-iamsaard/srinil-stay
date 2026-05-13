@@ -47,6 +47,8 @@ builder
     .Services.AddOptions<CorsOptions>()
     .Bind(builder.Configuration.GetSection(CorsOptions.SectionName));
 builder.Services.AddSingleton<TokenService>();
+builder.Services.AddSingleton(TimeProvider.System);
+builder.Services.AddSingleton<RefreshTokenCookieTransport>();
 builder.Services.AddScoped<RefreshTokenService>();
 if (corsOptions.AllowedOrigins.Length > 0)
 {

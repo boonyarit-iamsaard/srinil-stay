@@ -2,7 +2,6 @@ using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 
 namespace SrinilStay.Api.Authentication;
 
@@ -26,7 +25,7 @@ public static class AuthEndpoints
         UserManager<IdentityUser> userManager,
         TokenService tokenService,
         RefreshTokenService refreshTokenService,
-        IOptions<RefreshTokenOptions> refreshTokenOptions,
+        RefreshTokenCookieTransport refreshTokenCookieTransport,
         HttpContext httpContext
     )
     {
@@ -45,7 +44,7 @@ public static class AuthEndpoints
 
         AccessToken accessToken = tokenService.CreateAccessToken(user, []);
         IssuedRefreshToken refreshToken = await refreshTokenService.IssueAsync(user);
-        SetRefreshTokenCookie(httpContext, refreshToken, refreshTokenOptions.Value);
+        refreshTokenCookieTransport.Set(httpContext, refreshToken);
 
         return Results.Ok(TokenResponse.Create(accessToken));
     }
@@ -55,7 +54,7 @@ public static class AuthEndpoints
         UserManager<IdentityUser> userManager,
         TokenService tokenService,
         RefreshTokenService refreshTokenService,
-        IOptions<RefreshTokenOptions> refreshTokenOptions,
+        RefreshTokenCookieTransport refreshTokenCookieTransport,
         HttpContext httpContext
     )
     {
@@ -73,7 +72,7 @@ public static class AuthEndpoints
         IList<string> roles = await userManager.GetRolesAsync(user);
         AccessToken accessToken = tokenService.CreateAccessToken(user, roles.ToArray());
         IssuedRefreshToken refreshToken = await refreshTokenService.IssueAsync(user);
-        SetRefreshTokenCookie(httpContext, refreshToken, refreshTokenOptions.Value);
+        refreshTokenCookieTransport.Set(httpContext, refreshToken);
 
         return Results.Ok(TokenResponse.Create(accessToken));
     }
@@ -82,43 +81,52 @@ public static class AuthEndpoints
         TokenService tokenService,
         RefreshTokenService refreshTokenService,
         UserManager<IdentityUser> userManager,
-        IOptions<RefreshTokenOptions> refreshTokenOptions,
+        RefreshTokenCookieTransport refreshTokenCookieTransport,
         HttpContext httpContext
     )
     {
-        RefreshTokenOptions options = refreshTokenOptions.Value;
-        string? token = httpContext.Request.Cookies[options.CookieName];
+        string? token = refreshTokenCookieTransport.Read(httpContext);
         if (string.IsNullOrWhiteSpace(token))
         {
-            ClearRefreshTokenCookie(httpContext, options);
+            refreshTokenCookieTransport.Clear(httpContext);
             return UnauthorizedRefreshProblem();
         }
 
-        RefreshTokenRotationResult? result = await refreshTokenService.RotateAsync(token);
-        if (result is null)
+        RefreshTokenRotationResult result = await refreshTokenService.RotateAsync(token);
+        if (result is RefreshTokenRotationResult.Rejected)
         {
-            ClearRefreshTokenCookie(httpContext, options);
+            refreshTokenCookieTransport.Clear(httpContext);
             return UnauthorizedRefreshProblem();
         }
 
-        IList<string> roles = await userManager.GetRolesAsync(result.User);
-        AccessToken accessToken = tokenService.CreateAccessToken(result.User, roles.ToArray());
-        SetRefreshTokenCookie(httpContext, result.RefreshToken, options);
+        IdentityUser user = result switch
+        {
+            RefreshTokenRotationResult.Rotated rotation => rotation.User,
+            RefreshTokenRotationResult.GraceAccepted graceAccepted => graceAccepted.User,
+            _ => throw new InvalidOperationException("Unexpected refresh token rotation result."),
+        };
+
+        IList<string> roles = await userManager.GetRolesAsync(user);
+        AccessToken accessToken = tokenService.CreateAccessToken(user, roles.ToArray());
+
+        if (result is RefreshTokenRotationResult.Rotated rotated)
+        {
+            refreshTokenCookieTransport.Set(httpContext, rotated.RefreshToken);
+        }
 
         return Results.Ok(TokenResponse.Create(accessToken));
     }
 
     private static async Task<IResult> LogoutAsync(
         RefreshTokenService refreshTokenService,
-        IOptions<RefreshTokenOptions> refreshTokenOptions,
+        RefreshTokenCookieTransport refreshTokenCookieTransport,
         HttpContext httpContext
     )
     {
-        RefreshTokenOptions options = refreshTokenOptions.Value;
-        string? token = httpContext.Request.Cookies[options.CookieName];
+        string? token = refreshTokenCookieTransport.Read(httpContext);
 
         await refreshTokenService.RevokeFamilyForTokenAsync(token);
-        ClearRefreshTokenCookie(httpContext, options);
+        refreshTokenCookieTransport.Clear(httpContext);
 
         return Results.NoContent();
     }
@@ -158,43 +166,6 @@ public static class AuthEndpoints
             detail: "A valid refresh token is required.",
             statusCode: StatusCodes.Status401Unauthorized
         );
-
-    private static void SetRefreshTokenCookie(
-        HttpContext httpContext,
-        IssuedRefreshToken refreshToken,
-        RefreshTokenOptions refreshTokenOptions
-    )
-    {
-        if (refreshToken.Value is null)
-        {
-            return;
-        }
-
-        httpContext.Response.Cookies.Append(
-            refreshTokenOptions.CookieName,
-            refreshToken.Value,
-            CreateRefreshTokenCookieOptions(refreshToken.ExpiresAt)
-        );
-    }
-
-    private static void ClearRefreshTokenCookie(
-        HttpContext httpContext,
-        RefreshTokenOptions refreshTokenOptions
-    ) =>
-        httpContext.Response.Cookies.Delete(
-            refreshTokenOptions.CookieName,
-            CreateRefreshTokenCookieOptions(DateTimeOffset.UnixEpoch)
-        );
-
-    private static CookieOptions CreateRefreshTokenCookieOptions(DateTimeOffset expiresAt) =>
-        new()
-        {
-            HttpOnly = true,
-            Secure = true,
-            SameSite = SameSiteMode.Strict,
-            Path = "/auth",
-            Expires = expiresAt,
-        };
 
     private static bool TryValidate<TRequest>(
         TRequest request,
