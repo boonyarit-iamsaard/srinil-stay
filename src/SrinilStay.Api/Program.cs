@@ -16,6 +16,9 @@ string postgresConnectionString =
 JwtOptions jwtOptions =
     builder.Configuration.GetSection(JwtOptions.SectionName).Get<JwtOptions>()
     ?? throw new InvalidOperationException("Configuration section 'Jwt' is not configured.");
+CorsOptions corsOptions =
+    builder.Configuration.GetSection(CorsOptions.SectionName).Get<CorsOptions>()
+    ?? new CorsOptions();
 
 builder.Services.AddOpenApi();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -35,7 +38,30 @@ builder
     .Bind(builder.Configuration.GetSection(JwtOptions.SectionName))
     .Validate(JwtOptions.IsValid, "JWT configuration is invalid.")
     .ValidateOnStart();
+builder
+    .Services.AddOptions<RefreshTokenOptions>()
+    .Bind(builder.Configuration.GetSection(RefreshTokenOptions.SectionName))
+    .Validate(RefreshTokenOptions.IsValid, "Refresh token configuration is invalid.")
+    .ValidateOnStart();
+builder
+    .Services.AddOptions<CorsOptions>()
+    .Bind(builder.Configuration.GetSection(CorsOptions.SectionName));
 builder.Services.AddSingleton<TokenService>();
+builder.Services.AddScoped<RefreshTokenService>();
+if (corsOptions.AllowedOrigins.Length > 0)
+{
+    builder.Services.AddCors(options =>
+    {
+        options.AddDefaultPolicy(policy =>
+        {
+            policy
+                .WithOrigins(corsOptions.AllowedOrigins)
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials();
+        });
+    });
+}
 builder
     .Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -81,6 +107,11 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+if (corsOptions.AllowedOrigins.Length > 0)
+{
+    app.UseCors();
+}
 
 app.UseAuthentication();
 app.UseAuthorization();

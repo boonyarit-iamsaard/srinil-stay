@@ -2,6 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 
 namespace SrinilStay.Api.Authentication;
 
@@ -13,6 +14,8 @@ public static class AuthEndpoints
 
         group.MapPost("/register", RegisterAsync);
         group.MapPost("/login", LoginAsync);
+        group.MapPost("/refresh", RefreshAsync);
+        group.MapPost("/logout", LogoutAsync);
         group.MapGet("/me", GetCurrentUserAsync).RequireAuthorization();
 
         return group;
@@ -21,7 +24,10 @@ public static class AuthEndpoints
     private static async Task<IResult> RegisterAsync(
         RegisterRequest request,
         UserManager<IdentityUser> userManager,
-        TokenService tokenService
+        TokenService tokenService,
+        RefreshTokenService refreshTokenService,
+        IOptions<RefreshTokenOptions> refreshTokenOptions,
+        HttpContext httpContext
     )
     {
         if (!TryValidate(request, out Dictionary<string, string[]> validationErrors))
@@ -37,14 +43,20 @@ public static class AuthEndpoints
             return Results.ValidationProblem(ToValidationErrors(result.Errors));
         }
 
-        string accessToken = tokenService.CreateAccessToken(user, []);
+        AccessToken accessToken = tokenService.CreateAccessToken(user, []);
+        IssuedRefreshToken refreshToken = await refreshTokenService.IssueAsync(user);
+        SetRefreshTokenCookie(httpContext, refreshToken, refreshTokenOptions.Value);
+
         return Results.Ok(TokenResponse.Create(accessToken));
     }
 
     private static async Task<IResult> LoginAsync(
         LoginRequest request,
         UserManager<IdentityUser> userManager,
-        TokenService tokenService
+        TokenService tokenService,
+        RefreshTokenService refreshTokenService,
+        IOptions<RefreshTokenOptions> refreshTokenOptions,
+        HttpContext httpContext
     )
     {
         if (!TryValidate(request, out Dictionary<string, string[]> validationErrors))
@@ -59,9 +71,56 @@ public static class AuthEndpoints
         }
 
         IList<string> roles = await userManager.GetRolesAsync(user);
-        string accessToken = tokenService.CreateAccessToken(user, roles.ToArray());
+        AccessToken accessToken = tokenService.CreateAccessToken(user, roles.ToArray());
+        IssuedRefreshToken refreshToken = await refreshTokenService.IssueAsync(user);
+        SetRefreshTokenCookie(httpContext, refreshToken, refreshTokenOptions.Value);
 
         return Results.Ok(TokenResponse.Create(accessToken));
+    }
+
+    private static async Task<IResult> RefreshAsync(
+        TokenService tokenService,
+        RefreshTokenService refreshTokenService,
+        UserManager<IdentityUser> userManager,
+        IOptions<RefreshTokenOptions> refreshTokenOptions,
+        HttpContext httpContext
+    )
+    {
+        RefreshTokenOptions options = refreshTokenOptions.Value;
+        string? token = httpContext.Request.Cookies[options.CookieName];
+        if (string.IsNullOrWhiteSpace(token))
+        {
+            ClearRefreshTokenCookie(httpContext, options);
+            return UnauthorizedRefreshProblem();
+        }
+
+        RefreshTokenRotationResult? result = await refreshTokenService.RotateAsync(token);
+        if (result is null)
+        {
+            ClearRefreshTokenCookie(httpContext, options);
+            return UnauthorizedRefreshProblem();
+        }
+
+        IList<string> roles = await userManager.GetRolesAsync(result.User);
+        AccessToken accessToken = tokenService.CreateAccessToken(result.User, roles.ToArray());
+        SetRefreshTokenCookie(httpContext, result.RefreshToken, options);
+
+        return Results.Ok(TokenResponse.Create(accessToken));
+    }
+
+    private static async Task<IResult> LogoutAsync(
+        RefreshTokenService refreshTokenService,
+        IOptions<RefreshTokenOptions> refreshTokenOptions,
+        HttpContext httpContext
+    )
+    {
+        RefreshTokenOptions options = refreshTokenOptions.Value;
+        string? token = httpContext.Request.Cookies[options.CookieName];
+
+        await refreshTokenService.RevokeFamilyForTokenAsync(token);
+        ClearRefreshTokenCookie(httpContext, options);
+
+        return Results.NoContent();
     }
 
     private static async Task<IResult> GetCurrentUserAsync(
@@ -92,6 +151,50 @@ public static class AuthEndpoints
             detail: "Invalid email or password.",
             statusCode: StatusCodes.Status401Unauthorized
         );
+
+    private static IResult UnauthorizedRefreshProblem() =>
+        Results.Problem(
+            title: "Unauthorized",
+            detail: "A valid refresh token is required.",
+            statusCode: StatusCodes.Status401Unauthorized
+        );
+
+    private static void SetRefreshTokenCookie(
+        HttpContext httpContext,
+        IssuedRefreshToken refreshToken,
+        RefreshTokenOptions refreshTokenOptions
+    )
+    {
+        if (refreshToken.Value is null)
+        {
+            return;
+        }
+
+        httpContext.Response.Cookies.Append(
+            refreshTokenOptions.CookieName,
+            refreshToken.Value,
+            CreateRefreshTokenCookieOptions(refreshToken.ExpiresAt)
+        );
+    }
+
+    private static void ClearRefreshTokenCookie(
+        HttpContext httpContext,
+        RefreshTokenOptions refreshTokenOptions
+    ) =>
+        httpContext.Response.Cookies.Delete(
+            refreshTokenOptions.CookieName,
+            CreateRefreshTokenCookieOptions(DateTimeOffset.UnixEpoch)
+        );
+
+    private static CookieOptions CreateRefreshTokenCookieOptions(DateTimeOffset expiresAt) =>
+        new()
+        {
+            HttpOnly = true,
+            Secure = true,
+            SameSite = SameSiteMode.Strict,
+            Path = "/auth",
+            Expires = expiresAt,
+        };
 
     private static bool TryValidate<TRequest>(
         TRequest request,
@@ -148,9 +251,10 @@ public static class AuthEndpoints
         [property: Required] string Password
     );
 
-    private sealed record TokenResponse(string AccessToken, string TokenType)
+    private sealed record TokenResponse(string AccessToken, string TokenType, int ExpiresIn)
     {
-        public static TokenResponse Create(string accessToken) => new(accessToken, "Bearer");
+        public static TokenResponse Create(AccessToken accessToken) =>
+            new(accessToken.Value, "Bearer", accessToken.ExpiresInSeconds);
     }
 
     private sealed record CurrentUserResponse(

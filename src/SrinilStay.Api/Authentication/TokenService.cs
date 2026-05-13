@@ -11,11 +11,12 @@ public sealed class TokenService(IOptions<JwtOptions> jwtOptions)
 {
     private readonly JwtOptions jwtOptions = jwtOptions.Value;
 
-    public string CreateAccessToken(IdentityUser user, IReadOnlyCollection<string> roles)
+    public AccessToken CreateAccessToken(IdentityUser user, IReadOnlyCollection<string> roles)
     {
         SymmetricSecurityKey signingKey = new(Encoding.UTF8.GetBytes(jwtOptions.SigningKey));
         SigningCredentials credentials = new(signingKey, SecurityAlgorithms.HmacSha256);
         DateTimeOffset now = DateTimeOffset.UtcNow;
+        DateTimeOffset expiresAt = now.AddMinutes(jwtOptions.AccessTokenMinutes);
 
         List<Claim> claims =
         [
@@ -34,10 +35,16 @@ public sealed class TokenService(IOptions<JwtOptions> jwtOptions)
             audience: jwtOptions.Audience,
             claims: claims,
             notBefore: now.UtcDateTime,
-            expires: now.AddMinutes(jwtOptions.AccessTokenMinutes).UtcDateTime,
+            expires: expiresAt.UtcDateTime,
             signingCredentials: credentials
         );
 
-        return new JwtSecurityTokenHandler().WriteToken(token);
+        return new AccessToken(
+            new JwtSecurityTokenHandler().WriteToken(token),
+            expiresAt,
+            jwtOptions.AccessTokenMinutes * 60
+        );
     }
 }
+
+public sealed record AccessToken(string Value, DateTimeOffset ExpiresAt, int ExpiresInSeconds);
