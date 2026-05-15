@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace SrinilStay.Api.Authentication;
+namespace SrinilStay.Api.Features.Authentication.RefreshTokens;
 
 public sealed class RefreshTokenOptions
 {

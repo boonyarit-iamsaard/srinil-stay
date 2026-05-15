@@ -1,11 +1,15 @@
 using System.Text;
+using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
-using SrinilStay.Api.Authentication;
+using SrinilStay.Api.Configuration;
 using SrinilStay.Api.Data;
+using SrinilStay.Api.Features.Authentication;
+using SrinilStay.Api.Features.Authentication.RefreshTokens;
+using SrinilStay.Api.Features.Authentication.Tokens;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -21,6 +25,7 @@ CorsOptions corsOptions =
     ?? new CorsOptions();
 
 builder.Services.AddOpenApi();
+builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options
         .UseNpgsql(
@@ -119,6 +124,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapHealthChecks("/health");
-app.MapAuthEndpoints();
+app.MapAuthenticationEndpoints();
 
 await app.RunAsync();

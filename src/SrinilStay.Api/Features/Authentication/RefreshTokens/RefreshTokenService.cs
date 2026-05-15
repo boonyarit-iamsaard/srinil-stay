@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using SrinilStay.Api.Data;
 
-namespace SrinilStay.Api.Authentication;
+namespace SrinilStay.Api.Features.Authentication.RefreshTokens;
 
 public sealed class RefreshTokenService(
     ApplicationDbContext dbContext,

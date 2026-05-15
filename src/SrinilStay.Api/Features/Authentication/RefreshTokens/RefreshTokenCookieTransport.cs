@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Options;
 
-namespace SrinilStay.Api.Authentication;
+namespace SrinilStay.Api.Features.Authentication.RefreshTokens;
 
 public sealed class RefreshTokenCookieTransport(IOptions<RefreshTokenOptions> refreshTokenOptions)
 {

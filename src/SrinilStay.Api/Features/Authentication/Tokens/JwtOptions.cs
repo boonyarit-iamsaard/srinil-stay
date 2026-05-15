@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 
-namespace SrinilStay.Api.Authentication;
+namespace SrinilStay.Api.Features.Authentication.Tokens;
 
 public sealed class JwtOptions
 {

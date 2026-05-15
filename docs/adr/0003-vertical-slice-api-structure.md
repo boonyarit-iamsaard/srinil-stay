@@ -1,0 +1,3 @@
+# Vertical Slice API Structure
+
+Srinil Stay structures API features as vertical slices under `Features`, with one user-facing HTTP use case per slice owning its endpoint mapping, request and response contracts, validation, and handler logic. Endpoint registration stays explicit through feature/group mapper classes rather than automatic discovery, so route ownership, shared metadata, and security-sensitive authentication routes remain easy to inspect. Slice handlers may depend directly on shared framework and application services; request validation lives in the slice using FluentValidation with manual `IValidator<TRequest>` invocation, and slice-local contracts use nested names such as `Request`, `Response`, and `Validator`.

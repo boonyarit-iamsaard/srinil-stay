@@ -1,4 +1,4 @@
-namespace SrinilStay.Api.Authentication;
+namespace SrinilStay.Api.Configuration;
 
 public sealed class CorsOptions
 {

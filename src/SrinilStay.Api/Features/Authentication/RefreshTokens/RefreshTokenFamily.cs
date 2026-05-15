@@ -1,4 +1,4 @@
-namespace SrinilStay.Api.Authentication;
+namespace SrinilStay.Api.Features.Authentication.RefreshTokens;
 
 internal static class RefreshTokenFamily
 {

@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using SrinilStay.Api.Authentication;
+using SrinilStay.Api.Features.Authentication.RefreshTokens;
 
 namespace SrinilStay.Api.Data;
 

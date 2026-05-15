@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 
-namespace SrinilStay.Api.Authentication;
+namespace SrinilStay.Api.Features.Authentication.RefreshTokens;
 
 public abstract record RefreshTokenRotationResult
 {
