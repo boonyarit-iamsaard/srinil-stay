@@ -2,15 +2,15 @@ using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
 
-namespace SrinilStay.Api.Tests;
+namespace SrinilStay.Api.Tests.Features.Authentication;
 
-public sealed class UserAuthEndpointsTests : AuthEndpointTestBase
+public sealed class AuthenticationEndpointsTests : AuthenticationEndpointTestBase
 {
     [Fact]
     public async Task RegisteredUserCanLoginAndReadCurrentUser()
     {
         string email = $"user-{Guid.NewGuid():N}@example.com";
-        AuthRequest request = new(email, "Password1!");
+        AuthenticationRequest request = new(email, "Password1!");
 
         HttpResponseMessage registerResponse = await Http.PostAsJsonAsync(
             "/auth/register",

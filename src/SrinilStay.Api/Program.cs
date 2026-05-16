@@ -55,6 +55,7 @@ builder.Services.AddSingleton<TokenService>();
 builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddSingleton<RefreshTokenCookieTransport>();
 builder.Services.AddScoped<RefreshTokenService>();
+builder.Services.AddScoped<AuthenticationTokenIssuer>();
 if (corsOptions.AllowedOrigins.Length > 0)
 {
     builder.Services.AddCors(options =>

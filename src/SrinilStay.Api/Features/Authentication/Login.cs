@@ -33,8 +33,7 @@ public static class Login
         Request request,
         IValidator<Request> validator,
         UserManager<IdentityUser> userManager,
-        TokenService tokenService,
-        RefreshTokenService refreshTokenService,
+        AuthenticationTokenIssuer tokenIssuer,
         RefreshTokenCookieTransport refreshTokenCookieTransport,
         HttpContext httpContext
     )
@@ -56,12 +55,10 @@ public static class Login
             return InvalidLoginProblem();
         }
 
-        IList<string> roles = await userManager.GetRolesAsync(user);
-        AccessToken accessToken = tokenService.CreateAccessToken(user, roles.ToArray());
-        IssuedRefreshToken refreshToken = await refreshTokenService.IssueAsync(user);
-        refreshTokenCookieTransport.Set(httpContext, refreshToken);
+        AuthenticationTokens tokens = await tokenIssuer.IssueRememberedAuthenticationAsync(user);
+        refreshTokenCookieTransport.Set(httpContext, tokens.RefreshToken);
 
-        return Results.Ok(Response.Create(accessToken));
+        return Results.Ok(Response.Create(tokens.AccessToken));
     }
 
     private static IResult InvalidLoginProblem() =>

@@ -50,17 +50,44 @@ public sealed class RefreshTokenService(
             );
         }
 
-        if (refreshToken.ExpiresAt <= now)
+        RefreshTokenFamilyRotationDecision decision = RefreshTokenFamily.DecideRotation(
+            refreshToken,
+            now,
+            refreshTokenOptions
+        );
+
+        if (decision is RefreshTokenFamilyRotationDecision.Reject rejection)
         {
-            await RevokeFamilyAsync(refreshToken.FamilyId, now);
-            return new RefreshTokenRotationResult.Rejected(
-                RefreshTokenRotationRejectionReason.ExpiredToken
+            if (rejection.RevokesFamily)
+            {
+                await RevokeFamilyAsync(refreshToken.FamilyId, now);
+            }
+
+            return new RefreshTokenRotationResult.Rejected(rejection.Reason);
+        }
+
+        if (decision is RefreshTokenFamilyRotationDecision.AcceptGrace grace)
+        {
+            IdentityUser? graceUser = await userManager.FindByIdAsync(refreshToken.UserId);
+            if (graceUser is null)
+            {
+                await RevokeFamilyAsync(refreshToken.FamilyId, now);
+                return new RefreshTokenRotationResult.Rejected(
+                    RefreshTokenRotationRejectionReason.MissingUser
+                );
+            }
+
+            return new RefreshTokenRotationResult.GraceAccepted(
+                graceUser,
+                grace.CurrentRefreshTokenExpiresAt
             );
         }
 
-        if (refreshToken.RevokedAt is not null)
+        if (decision is not RefreshTokenFamilyRotationDecision.RotateCurrent)
         {
-            return await TryUseGraceTokenAsync(refreshToken, now);
+            return new RefreshTokenRotationResult.Rejected(
+                RefreshTokenRotationRejectionReason.UnknownToken
+            );
         }
 
         IdentityUser? user = await userManager.FindByIdAsync(refreshToken.UserId);
@@ -109,40 +136,6 @@ public sealed class RefreshTokenService(
         await RevokeFamilyAsync(refreshToken.FamilyId, timeProvider.GetUtcNow());
     }
 
-    private async Task<RefreshTokenRotationResult> TryUseGraceTokenAsync(
-        RefreshToken refreshToken,
-        DateTimeOffset now
-    )
-    {
-        if (
-            !RefreshTokenFamily.CanUseImmediatelyPreviousToken(
-                refreshToken,
-                now,
-                refreshTokenOptions
-            )
-        )
-        {
-            await RevokeFamilyAsync(refreshToken.FamilyId, now);
-            return new RefreshTokenRotationResult.Rejected(
-                RefreshTokenRotationRejectionReason.ReusedTokenOutsideGrace
-            );
-        }
-
-        IdentityUser? user = await userManager.FindByIdAsync(refreshToken.UserId);
-        if (user is null)
-        {
-            await RevokeFamilyAsync(refreshToken.FamilyId, now);
-            return new RefreshTokenRotationResult.Rejected(
-                RefreshTokenRotationRejectionReason.MissingUser
-            );
-        }
-
-        return new RefreshTokenRotationResult.GraceAccepted(
-            user,
-            refreshToken.ReplacedByToken!.ExpiresAt
-        );
-    }
-
     private async Task RevokeFamilyAsync(Guid familyId, DateTimeOffset revokedAt)
     {
         List<RefreshToken> familyTokens = await dbContext
@@ -151,11 +144,7 @@ public sealed class RefreshTokenService(
             )
             .ToListAsync();
 
-        foreach (RefreshToken familyToken in familyTokens)
-        {
-            familyToken.RevokedAt = revokedAt;
-        }
-
+        RefreshTokenFamily.RevokeActiveTokens(familyTokens, revokedAt);
         await dbContext.SaveChangesAsync();
     }
 

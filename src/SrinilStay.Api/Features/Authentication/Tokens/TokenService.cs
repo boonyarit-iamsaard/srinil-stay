@@ -7,7 +7,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace SrinilStay.Api.Features.Authentication.Tokens;
 
-public sealed class TokenService(IOptions<JwtOptions> jwtOptions)
+public sealed class TokenService(IOptions<JwtOptions> jwtOptions, TimeProvider timeProvider)
 {
     private readonly JwtOptions jwtOptions = jwtOptions.Value;
 
@@ -15,7 +15,7 @@ public sealed class TokenService(IOptions<JwtOptions> jwtOptions)
     {
         SymmetricSecurityKey signingKey = new(Encoding.UTF8.GetBytes(jwtOptions.SigningKey));
         SigningCredentials credentials = new(signingKey, SecurityAlgorithms.HmacSha256);
-        DateTimeOffset now = DateTimeOffset.UtcNow;
+        DateTimeOffset now = timeProvider.GetUtcNow();
         DateTimeOffset expiresAt = now.AddMinutes(jwtOptions.AccessTokenMinutes);
 
         List<Claim> claims =

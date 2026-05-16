@@ -33,8 +33,7 @@ public static class Register
         Request request,
         IValidator<Request> validator,
         UserManager<IdentityUser> userManager,
-        TokenService tokenService,
-        RefreshTokenService refreshTokenService,
+        AuthenticationTokenIssuer tokenIssuer,
         RefreshTokenCookieTransport refreshTokenCookieTransport,
         HttpContext httpContext
     )
@@ -57,11 +56,10 @@ public static class Register
             return Results.ValidationProblem(ToValidationErrors(result.Errors));
         }
 
-        AccessToken accessToken = tokenService.CreateAccessToken(user, []);
-        IssuedRefreshToken refreshToken = await refreshTokenService.IssueAsync(user);
-        refreshTokenCookieTransport.Set(httpContext, refreshToken);
+        AuthenticationTokens tokens = await tokenIssuer.IssueRememberedAuthenticationAsync(user);
+        refreshTokenCookieTransport.Set(httpContext, tokens.RefreshToken);
 
-        return Results.Ok(Response.Create(accessToken));
+        return Results.Ok(Response.Create(tokens.AccessToken));
     }
 
     private static Dictionary<string, string[]> ToValidationErrors(

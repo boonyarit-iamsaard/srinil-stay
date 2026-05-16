@@ -42,7 +42,50 @@ internal static class RefreshTokenFamily
         return next;
     }
 
-    public static bool CanUseImmediatelyPreviousToken(
+    public static RefreshTokenFamilyRotationDecision DecideRotation(
+        RefreshToken refreshToken,
+        DateTimeOffset now,
+        RefreshTokenOptions options
+    )
+    {
+        if (refreshToken.ExpiresAt <= now)
+        {
+            return new RefreshTokenFamilyRotationDecision.Reject(
+                RefreshTokenRotationRejectionReason.ExpiredToken,
+                RevokesFamily: true
+            );
+        }
+
+        if (refreshToken.RevokedAt is null)
+        {
+            return new RefreshTokenFamilyRotationDecision.RotateCurrent();
+        }
+
+        if (CanUseImmediatelyPreviousToken(refreshToken, now, options))
+        {
+            return new RefreshTokenFamilyRotationDecision.AcceptGrace(
+                refreshToken.ReplacedByToken!.ExpiresAt
+            );
+        }
+
+        return new RefreshTokenFamilyRotationDecision.Reject(
+            RefreshTokenRotationRejectionReason.ReusedTokenOutsideGrace,
+            RevokesFamily: true
+        );
+    }
+
+    public static void RevokeActiveTokens(
+        IEnumerable<RefreshToken> refreshTokens,
+        DateTimeOffset revokedAt
+    )
+    {
+        foreach (RefreshToken refreshToken in refreshTokens.Where(token => token.RevokedAt is null))
+        {
+            refreshToken.RevokedAt = revokedAt;
+        }
+    }
+
+    private static bool CanUseImmediatelyPreviousToken(
         RefreshToken previous,
         DateTimeOffset now,
         RefreshTokenOptions options
@@ -51,4 +94,17 @@ internal static class RefreshTokenFamily
         && previous.RevokedAt is not null
         && now - previous.RevokedAt.Value <= TimeSpan.FromSeconds(options.RotationGraceSeconds)
         && previous.ReplacedByToken.ExpiresAt > now;
+}
+
+internal abstract record RefreshTokenFamilyRotationDecision
+{
+    private RefreshTokenFamilyRotationDecision() { }
+
+    public sealed record RotateCurrent : RefreshTokenFamilyRotationDecision;
+
+    public sealed record AcceptGrace(DateTimeOffset CurrentRefreshTokenExpiresAt)
+        : RefreshTokenFamilyRotationDecision;
+
+    public sealed record Reject(RefreshTokenRotationRejectionReason Reason, bool RevokesFamily)
+        : RefreshTokenFamilyRotationDecision;
 }

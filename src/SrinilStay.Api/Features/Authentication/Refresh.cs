@@ -18,9 +18,8 @@ public static class Refresh
     }
 
     private static async Task<IResult> Handler(
-        TokenService tokenService,
         RefreshTokenService refreshTokenService,
-        UserManager<IdentityUser> userManager,
+        AuthenticationTokenIssuer tokenIssuer,
         RefreshTokenCookieTransport refreshTokenCookieTransport,
         HttpContext httpContext
     )
@@ -46,8 +45,7 @@ public static class Refresh
             _ => throw new InvalidOperationException("Unexpected refresh token rotation result."),
         };
 
-        IList<string> roles = await userManager.GetRolesAsync(user);
-        AccessToken accessToken = tokenService.CreateAccessToken(user, roles.ToArray());
+        AccessToken accessToken = await tokenIssuer.IssueAccessTokenAsync(user);
 
         if (result is RefreshTokenRotationResult.Rotated rotated)
         {

@@ -2,14 +2,14 @@ using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
 
-namespace SrinilStay.Api.Tests;
+namespace SrinilStay.Api.Tests.Features.Authentication;
 
-public sealed class RefreshTokenEndpointsTests : AuthEndpointTestBase
+public sealed class RefreshTokenEndpointsTests : AuthenticationEndpointTestBase
 {
     [Fact]
     public async Task RefreshRotatesRefreshTokenAndReturnsAccessToken()
     {
-        AuthRequest request = new($"user-{Guid.NewGuid():N}@example.com", "Password1!");
+        AuthenticationRequest request = new($"user-{Guid.NewGuid():N}@example.com", "Password1!");
 
         HttpResponseMessage registerResponse = await Http.PostAsJsonAsync(
             "/auth/register",
@@ -36,7 +36,7 @@ public sealed class RefreshTokenEndpointsTests : AuthEndpointTestBase
     [Fact]
     public async Task ReusingRotatedRefreshTokenAfterGraceRevokesFamily()
     {
-        AuthRequest request = new($"user-{Guid.NewGuid():N}@example.com", "Password1!");
+        AuthenticationRequest request = new($"user-{Guid.NewGuid():N}@example.com", "Password1!");
 
         HttpResponseMessage registerResponse = await Http.PostAsJsonAsync(
             "/auth/register",
@@ -66,7 +66,7 @@ public sealed class RefreshTokenEndpointsTests : AuthEndpointTestBase
     [Fact]
     public async Task ReusingImmediatelyRotatedRefreshTokenWithinGraceDoesNotRevokeFamily()
     {
-        AuthRequest request = new($"user-{Guid.NewGuid():N}@example.com", "Password1!");
+        AuthenticationRequest request = new($"user-{Guid.NewGuid():N}@example.com", "Password1!");
 
         HttpResponseMessage registerResponse = await Http.PostAsJsonAsync(
             "/auth/register",
@@ -102,7 +102,7 @@ public sealed class RefreshTokenEndpointsTests : AuthEndpointTestBase
     [Fact]
     public async Task LogoutRevokesRefreshTokenFamilyAndClearsCookie()
     {
-        AuthRequest request = new($"user-{Guid.NewGuid():N}@example.com", "Password1!");
+        AuthenticationRequest request = new($"user-{Guid.NewGuid():N}@example.com", "Password1!");
 
         HttpResponseMessage loginResponse = await Http.PostAsJsonAsync("/auth/register", request);
         loginResponse.EnsureSuccessStatusCode();
