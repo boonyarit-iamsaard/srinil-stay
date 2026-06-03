@@ -7,25 +7,27 @@
   ],
   "type": "module",
   "scripts": {
-    "dev": "turbo dev",
     "build": "turbo build",
-    "check-types": "turbo check-types",
-    "dev:web": "turbo -F web dev",
-    "dev:server": "turbo -F server dev",
-    "db:push": "turbo -F @grammar-correction-tool/db db:push",
-    "db:studio": "turbo -F @grammar-correction-tool/db db:studio",
+    "check": "ultracite check",
+    "db:down": "turbo -F @grammar-correction-tool/db db:down",
     "db:generate": "turbo -F @grammar-correction-tool/db db:generate",
     "db:migrate": "turbo -F @grammar-correction-tool/db db:migrate",
+    "db:push": "turbo -F @grammar-correction-tool/db db:push",
     "db:start": "turbo -F @grammar-correction-tool/db db:start",
-    "db:watch": "turbo -F @grammar-correction-tool/db db:watch",
     "db:stop": "turbo -F @grammar-correction-tool/db db:stop",
-    "db:down": "turbo -F @grammar-correction-tool/db db:down",
-    "check": "ultracite check",
+    "db:studio": "turbo -F @grammar-correction-tool/db db:studio",
+    "db:watch": "turbo -F @grammar-correction-tool/db db:watch",
+    "dev": "turbo dev",
+    "dev:server": "turbo -F server dev",
+    "dev:web": "turbo -F web dev",
     "fix": "ultracite fix",
-    "prepare": "husky"
+    "prepare": "husky",
+    "types:check": "turbo types:check"
   },
   "lint-staged": {
-    "*": "biome check --no-errors-on-unmatched --files-ignore-unknown=true"
+    "*.{js,ts,cjs,mjs,d.cts,d.mts,jsx,tsx,json,jsonc}": [
+      "biome check --no-errors-on-unmatched --files-ignore-unknown=true"
+    ]
   },
   "dependencies": {
     "@grammar-correction-tool/env": "workspace:*",

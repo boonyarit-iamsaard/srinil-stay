@@ -8,14 +8,12 @@
   "files": {
     "ignoreUnknown": false,
     "includes": [
-      "**",
       "!**/.next",
       "!**/dist",
       "!**/.turbo",
       "!**/.nx",
       "!**/dev-dist",
       "!**/.zed",
-      "!**/.vscode",
       "!**/routeTree.gen.ts",
       "!**/src-tauri",
       "!**/.nuxt",
@@ -31,7 +29,7 @@
   },
   "formatter": {
     "enabled": true,
-    "indentStyle": "tab"
+    "indentStyle": "space"
   },
   "assist": {
     "actions": {
