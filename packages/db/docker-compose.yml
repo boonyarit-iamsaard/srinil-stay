@@ -2,7 +2,7 @@ name: grammar-correction-tool
 
 services:
   postgres:
-    image: postgres
+    image: docker.io/postgres:18-alpine
     container_name: grammar-correction-tool-postgres
     environment:
       POSTGRES_DB: grammar-correction-tool
@@ -11,7 +11,9 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - grammar-correction-tool_postgres_data:/var/lib/postgresql
+      - pgdata:/var/lib/postgresql
+    networks:
+      - grammar-correction-tool-network
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
@@ -20,4 +22,9 @@ services:
     restart: unless-stopped
 
 volumes:
-  grammar-correction-tool_postgres_data:
+  pgdata:
+    name: grammar-correction-tool-pgdata
+
+networks:
+  grammar-correction-tool-network:
+    name: grammar-correction-tool-network
