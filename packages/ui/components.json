@@ -1,0 +1,24 @@
+{
+  "$schema": "https://ui.shadcn.com/schema.json",
+  "style": "base-lyra",
+  "rsc": false,
+  "tsx": true,
+  "tailwind": {
+    "config": "",
+    "css": "src/styles/globals.css",
+    "baseColor": "neutral",
+    "cssVariables": true,
+    "prefix": ""
+  },
+  "iconLibrary": "lucide",
+  "aliases": {
+    "components": "@grammar-correction-tool/ui/components",
+    "utils": "@grammar-correction-tool/ui/lib/utils",
+    "hooks": "@grammar-correction-tool/ui/hooks",
+    "lib": "@grammar-correction-tool/ui/lib",
+    "ui": "@grammar-correction-tool/ui/components"
+  },
+  "menuColor": "default",
+  "menuAccent": "subtle",
+  "registries": {}
+}

@@ -1,0 +1,40 @@
+{
+  "name": "grammar-correction-tool",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "type": "module",
+  "scripts": {
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "check-types": "turbo check-types",
+    "dev:web": "turbo -F web dev",
+    "dev:server": "turbo -F server dev",
+    "db:push": "turbo -F @grammar-correction-tool/db db:push",
+    "db:studio": "turbo -F @grammar-correction-tool/db db:studio",
+    "db:generate": "turbo -F @grammar-correction-tool/db db:generate",
+    "db:migrate": "turbo -F @grammar-correction-tool/db db:migrate",
+    "db:start": "turbo -F @grammar-correction-tool/db db:start",
+    "db:watch": "turbo -F @grammar-correction-tool/db db:watch",
+    "db:stop": "turbo -F @grammar-correction-tool/db db:stop",
+    "db:down": "turbo -F @grammar-correction-tool/db db:down",
+    "check": "ultracite check",
+    "fix": "ultracite fix"
+  },
+  "dependencies": {
+    "@grammar-correction-tool/env": "workspace:*",
+    "dotenv": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.4.15",
+    "@grammar-correction-tool/config": "workspace:*",
+    "@types/node": "catalog:",
+    "turbo": "^2.8.12",
+    "typescript": "catalog:",
+    "ultracite": "7.8.1"
+  },
+  "packageManager": "pnpm@10.25.0"
+}

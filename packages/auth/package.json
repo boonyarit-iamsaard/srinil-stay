@@ -1,0 +1,24 @@
+{
+  "name": "@grammar-correction-tool/auth",
+  "type": "module",
+  "exports": {
+    ".": {
+      "default": "./src/index.ts"
+    },
+    "./*": {
+      "default": "./src/*.ts"
+    }
+  },
+  "scripts": {},
+  "dependencies": {
+    "@grammar-correction-tool/db": "workspace:*",
+    "@grammar-correction-tool/env": "workspace:*",
+    "better-auth": "catalog:",
+    "dotenv": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@grammar-correction-tool/config": "workspace:*",
+    "typescript": "catalog:"
+  }
+}

@@ -1,0 +1,23 @@
+name: grammar-correction-tool
+
+services:
+  postgres:
+    image: postgres
+    container_name: grammar-correction-tool-postgres
+    environment:
+      POSTGRES_DB: grammar-correction-tool
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    volumes:
+      - grammar-correction-tool_postgres_data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  grammar-correction-tool_postgres_data:

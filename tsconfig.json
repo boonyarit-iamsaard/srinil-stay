@@ -1,0 +1,6 @@
+{
+  "extends": "@grammar-correction-tool/config/tsconfig.base.json",
+  "compilerOptions": {
+    "strictNullChecks": true
+  }
+}
