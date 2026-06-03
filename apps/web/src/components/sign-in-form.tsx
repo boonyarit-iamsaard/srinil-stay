@@ -1,4 +1,12 @@
 import { Button } from "@grammar-correction-tool/ui/components/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@grammar-correction-tool/ui/components/card";
 import { Input } from "@grammar-correction-tool/ui/components/input";
 import { Label } from "@grammar-correction-tool/ui/components/label";
 import { useForm } from "@tanstack/react-form";
@@ -57,18 +65,22 @@ export default function SignInForm({
   }
 
   return (
-    <div className="mx-auto mt-10 w-full max-w-md p-6">
-      <h1 className="mb-6 text-center font-bold text-3xl">Welcome Back</h1>
-
-      <form
-        className="space-y-4"
-        onSubmit={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          form.handleSubmit();
-        }}
-      >
-        <div>
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-xl">Welcome back</CardTitle>
+        <CardDescription>
+          Enter your email below to sign in to your account
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <form
+          className="space-y-4"
+          onSubmit={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            form.handleSubmit();
+          }}
+        >
           <form.Field name="email">
             {(field) => (
               <div className="space-y-2">
@@ -82,16 +94,14 @@ export default function SignInForm({
                   value={field.state.value}
                 />
                 {field.state.meta.errors.map((error) => (
-                  <p className="text-red-500" key={error?.message}>
+                  <p className="text-destructive text-sm" key={error?.message}>
                     {error?.message}
                   </p>
                 ))}
               </div>
             )}
           </form.Field>
-        </div>
 
-        <div>
           <form.Field name="password">
             {(field) => (
               <div className="space-y-2">
@@ -105,42 +115,37 @@ export default function SignInForm({
                   value={field.state.value}
                 />
                 {field.state.meta.errors.map((error) => (
-                  <p className="text-red-500" key={error?.message}>
+                  <p className="text-destructive text-sm" key={error?.message}>
                     {error?.message}
                   </p>
                 ))}
               </div>
             )}
           </form.Field>
-        </div>
 
-        <form.Subscribe
-          selector={(state) => ({
-            canSubmit: state.canSubmit,
-            isSubmitting: state.isSubmitting,
-          })}
-        >
-          {({ canSubmit, isSubmitting }) => (
-            <Button
-              className="w-full"
-              disabled={!canSubmit || isSubmitting}
-              type="submit"
-            >
-              {isSubmitting ? "Submitting..." : "Sign In"}
-            </Button>
-          )}
-        </form.Subscribe>
-      </form>
-
-      <div className="mt-4 text-center">
-        <Button
-          className="text-indigo-600 hover:text-indigo-800"
-          onClick={onSwitchToSignUp}
-          variant="link"
-        >
+          <form.Subscribe
+            selector={(state) => ({
+              canSubmit: state.canSubmit,
+              isSubmitting: state.isSubmitting,
+            })}
+          >
+            {({ canSubmit, isSubmitting }) => (
+              <Button
+                className="w-full"
+                disabled={!canSubmit || isSubmitting}
+                type="submit"
+              >
+                {isSubmitting ? "Submitting..." : "Sign In"}
+              </Button>
+            )}
+          </form.Subscribe>
+        </form>
+      </CardContent>
+      <CardFooter className="justify-center">
+        <Button onClick={onSwitchToSignUp} variant="link">
           Need an account? Sign Up
         </Button>
-      </div>
-    </div>
+      </CardFooter>
+    </Card>
   );
 }

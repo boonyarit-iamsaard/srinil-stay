@@ -5,10 +5,10 @@ import { Input } from "@grammar-correction-tool/ui/components/input";
 import { createFileRoute } from "@tanstack/react-router";
 import { DefaultChatTransport } from "ai";
 import { Send } from "lucide-react";
-import { type FormEvent, useEffect, useRef, useState } from "react";
+import { type SubmitEvent, useEffect, useRef, useState } from "react";
 import { Streamdown } from "streamdown";
 
-export const Route = createFileRoute("/ai")({
+export const Route = createFileRoute("/_protected/ai")({
   component: RouteComponent,
 });
 
@@ -26,7 +26,7 @@ function RouteComponent() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   });
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     const text = input.trim();
     if (!text) {
@@ -37,7 +37,7 @@ function RouteComponent() {
   };
 
   return (
-    <div className="mx-auto grid w-full grid-rows-[1fr_auto] overflow-hidden p-4">
+    <div className="mx-auto grid h-full w-full grid-rows-[1fr_auto] overflow-hidden p-4">
       <div className="space-y-4 overflow-y-auto pb-4">
         {messages.length === 0 ? (
           <div className="mt-8 text-center text-muted-foreground">
