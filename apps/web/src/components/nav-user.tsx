@@ -61,8 +61,8 @@ export default function NavUser() {
               />
             }
           >
-            <Avatar className="size-8 rounded-none">
-              <AvatarFallback className="rounded-none">
+            <Avatar className="size-8 rounded-lg">
+              <AvatarFallback className="rounded-lg">
                 {getInitials(user.name)}
               </AvatarFallback>
             </Avatar>
@@ -78,14 +78,16 @@ export default function NavUser() {
             side={isMobile ? "bottom" : "right"}
             sideOffset={4}
           >
-            <DropdownMenuLabel className="font-normal">
-              <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">{user.name}</span>
-                <span className="truncate text-muted-foreground text-xs">
-                  {user.email}
-                </span>
-              </div>
-            </DropdownMenuLabel>
+            <DropdownMenuGroup>
+              <DropdownMenuLabel className="font-normal">
+                <div className="grid flex-1 text-left text-sm leading-tight">
+                  <span className="truncate font-medium">{user.name}</span>
+                  <span className="truncate text-muted-foreground text-xs">
+                    {user.email}
+                  </span>
+                </div>
+              </DropdownMenuLabel>
+            </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuItem

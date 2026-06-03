@@ -16,7 +16,11 @@ function HomeComponent() {
         text, get clear corrections, and sound your best every time.
       </p>
       <div className="mt-10">
-        <Button render={<Link to="/dashboard" />} size="lg">
+        <Button
+          nativeButton={false}
+          render={<Link to="/dashboard" />}
+          size="lg"
+        >
           Get started
         </Button>
       </div>
