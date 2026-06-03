@@ -2,23 +2,23 @@ import { env } from "@grammar-correction-tool/env/server";
 import { drizzle } from "drizzle-orm/node-postgres";
 
 import {
-  account,
-  accountRelations,
-  session,
-  sessionRelations,
-  user,
-  userRelations,
-  verification,
+  accounts,
+  accountsRelations,
+  sessions,
+  sessionsRelations,
+  users,
+  usersRelations,
+  verifications,
 } from "./schema/auth";
 
 const schema = {
-  account,
-  accountRelations,
-  session,
-  sessionRelations,
-  user,
-  userRelations,
-  verification,
+  accounts,
+  accountsRelations,
+  sessions,
+  sessionsRelations,
+  users,
+  usersRelations,
+  verifications,
 };
 
 export function createDb() {

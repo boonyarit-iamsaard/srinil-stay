@@ -1,25 +1,25 @@
 import { createDb } from "@grammar-correction-tool/db";
 import {
-  account,
-  accountRelations,
-  session,
-  sessionRelations,
-  user,
-  userRelations,
-  verification,
+  accounts,
+  accountsRelations,
+  sessions,
+  sessionsRelations,
+  users,
+  usersRelations,
+  verifications,
 } from "@grammar-correction-tool/db/schema/auth";
 import { env } from "@grammar-correction-tool/env/server";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 
 const schema = {
-  account,
-  accountRelations,
-  session,
-  sessionRelations,
-  user,
-  userRelations,
-  verification,
+  accounts,
+  accountsRelations,
+  sessions,
+  sessionsRelations,
+  users,
+  usersRelations,
+  verifications,
 };
 
 export function createAuth() {
@@ -28,7 +28,7 @@ export function createAuth() {
   return betterAuth({
     database: drizzleAdapter(db, {
       provider: "pg",
-
+      usePlural: true,
       schema,
     }),
     trustedOrigins: [env.CORS_ORIGIN],
@@ -38,6 +38,9 @@ export function createAuth() {
     secret: env.BETTER_AUTH_SECRET,
     baseURL: env.BETTER_AUTH_URL,
     advanced: {
+      database: {
+        generateId: "uuid",
+      },
       defaultCookieAttributes: {
         sameSite: "none",
         secure: true,
