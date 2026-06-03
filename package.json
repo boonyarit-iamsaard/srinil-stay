@@ -21,7 +21,11 @@
     "db:stop": "turbo -F @grammar-correction-tool/db db:stop",
     "db:down": "turbo -F @grammar-correction-tool/db db:down",
     "check": "ultracite check",
-    "fix": "ultracite fix"
+    "fix": "ultracite fix",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "*": "biome check --no-errors-on-unmatched --files-ignore-unknown=true"
   },
   "dependencies": {
     "@grammar-correction-tool/env": "workspace:*",
@@ -32,9 +36,11 @@
     "@biomejs/biome": "2.4.15",
     "@grammar-correction-tool/config": "workspace:*",
     "@types/node": "catalog:",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.7",
     "turbo": "^2.8.12",
     "typescript": "catalog:",
     "ultracite": "7.8.1"
   },
-  "packageManager": "pnpm@10.25.0"
+  "packageManager": "pnpm@11.5.1"
 }

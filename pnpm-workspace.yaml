@@ -1,9 +1,49 @@
 packages:
   - apps/*
   - packages/*
+
+# --- Supply-chain hardening (pnpm 11) ---
+# strictDepBuilds, blockExoticSubdeps, and minimumReleaseAge are pnpm 11
+# defaults; kept explicit here so the posture is self-documenting and survives
+# a pnpm downgrade. trustPolicy is opt-in even in v11.
+
+# Refuse versions published less than this many minutes ago (4320 = 3 days;
+# v11 default is 1440 = 1 day). Gives the community time to flag/yank a
+# compromised release before it lands on disk — the main defense for the first
+# install. If a pinned exact version is newer than this and install fails, add
+# it to minimumReleaseAgeExclude rather than lowering the window.
+minimumReleaseAge: 4320
+minimumReleaseAgeExclude: []
+
+# Fail the install if ANY dependency ships an install/postinstall script that
+# isn't explicitly approved below — instead of silently skipping it.
+strictDepBuilds: true
+
+# The only packages allowed to run lifecycle scripts. Keep this list minimal.
 allowBuilds:
   esbuild: true
   msw: true
+
+# Reject an update whose provenance is weaker than the version it replaces
+# (e.g. a release published without CI/CD attestation).
+trustPolicy: no-downgrade
+# Verified-benign exceptions to the trust policy. undici-types@6.21.0 (a
+# transitive dep of @types/node) predates undici's provenance pipeline;
+# published 2024-11-13 by the nodejs/undici maintainers — not a takeover.
+trustPolicyExclude:
+  - undici-types@6.21.0
+  # semver@6.3.1: 2023 maintenance backport by the npm CLI team
+  # (github.com/npm/node-semver); provenance not attached to old 6.x line.
+  - semver@6.3.1
+
+# Don't let an approved dependency pull transitive deps from non-registry
+# (git/tarball/url) sources.
+blockExoticSubdeps: true
+
+# Error (don't silently auto-install) when node_modules is out of sync before
+# running a script — keeps what runs aligned with the committed lockfile.
+verifyDepsBeforeRun: error
+
 catalog:
   dotenv: ^17.2.2
   zod: ^4.1.13
