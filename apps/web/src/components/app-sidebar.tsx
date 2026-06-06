@@ -18,12 +18,11 @@ import NavUser from "./nav-user";
 interface NavItem {
   icon: LucideIcon;
   title: string;
-  to: "/dashboard" | "/ai";
+  to: "/dashboard";
 }
 
 const NAV_ITEMS: NavItem[] = [
   { title: "Dashboard", to: "/dashboard", icon: LayoutDashboard },
-  { title: "AI Chat", to: "/ai", icon: Sparkles },
 ];
 
 export default function AppSidebar() {

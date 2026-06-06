@@ -14,7 +14,6 @@ import { Route as ProtectedRouteImport } from './routes/_protected'
 import { Route as AuthRouteImport } from './routes/_auth'
 import { Route as PublicIndexRouteImport } from './routes/_public/index'
 import { Route as ProtectedDashboardRouteImport } from './routes/_protected/dashboard'
-import { Route as ProtectedAiRouteImport } from './routes/_protected/ai'
 import { Route as AuthLoginRouteImport } from './routes/_auth/login'
 
 const PublicRoute = PublicRouteImport.update({
@@ -39,11 +38,6 @@ const ProtectedDashboardRoute = ProtectedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => ProtectedRoute,
 } as any)
-const ProtectedAiRoute = ProtectedAiRouteImport.update({
-  id: '/ai',
-  path: '/ai',
-  getParentRoute: () => ProtectedRoute,
-} as any)
 const AuthLoginRoute = AuthLoginRouteImport.update({
   id: '/login',
   path: '/login',
@@ -53,13 +47,11 @@ const AuthLoginRoute = AuthLoginRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof PublicIndexRoute
   '/login': typeof AuthLoginRoute
-  '/ai': typeof ProtectedAiRoute
   '/dashboard': typeof ProtectedDashboardRoute
 }
 export interface FileRoutesByTo {
   '/': typeof PublicIndexRoute
   '/login': typeof AuthLoginRoute
-  '/ai': typeof ProtectedAiRoute
   '/dashboard': typeof ProtectedDashboardRoute
 }
 export interface FileRoutesById {
@@ -68,22 +60,20 @@ export interface FileRoutesById {
   '/_protected': typeof ProtectedRouteWithChildren
   '/_public': typeof PublicRouteWithChildren
   '/_auth/login': typeof AuthLoginRoute
-  '/_protected/ai': typeof ProtectedAiRoute
   '/_protected/dashboard': typeof ProtectedDashboardRoute
   '/_public/': typeof PublicIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login' | '/ai' | '/dashboard'
+  fullPaths: '/' | '/login' | '/dashboard'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/ai' | '/dashboard'
+  to: '/' | '/login' | '/dashboard'
   id:
     | '__root__'
     | '/_auth'
     | '/_protected'
     | '/_public'
     | '/_auth/login'
-    | '/_protected/ai'
     | '/_protected/dashboard'
     | '/_public/'
   fileRoutesById: FileRoutesById
@@ -131,13 +121,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedDashboardRouteImport
       parentRoute: typeof ProtectedRoute
     }
-    '/_protected/ai': {
-      id: '/_protected/ai'
-      path: '/ai'
-      fullPath: '/ai'
-      preLoaderRoute: typeof ProtectedAiRouteImport
-      parentRoute: typeof ProtectedRoute
-    }
     '/_auth/login': {
       id: '/_auth/login'
       path: '/login'
@@ -159,12 +142,10 @@ const AuthRouteChildren: AuthRouteChildren = {
 const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
 
 interface ProtectedRouteChildren {
-  ProtectedAiRoute: typeof ProtectedAiRoute
   ProtectedDashboardRoute: typeof ProtectedDashboardRoute
 }
 
 const ProtectedRouteChildren: ProtectedRouteChildren = {
-  ProtectedAiRoute: ProtectedAiRoute,
   ProtectedDashboardRoute: ProtectedDashboardRoute,
 }
 

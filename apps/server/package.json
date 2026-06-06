@@ -10,13 +10,10 @@
     "start": "node dist/index.mjs"
   },
   "dependencies": {
-    "@ai-sdk/devtools": "^0.0.2",
-    "@ai-sdk/google": "^3.0.1",
     "@hono/node-server": "^1.14.4",
     "@srinil-stay/auth": "workspace:*",
     "@srinil-stay/drizzle": "workspace:*",
     "@srinil-stay/env": "workspace:*",
-    "ai": "catalog:",
     "better-auth": "catalog:",
     "dotenv": "catalog:",
     "hono": "^4.8.2",

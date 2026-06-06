@@ -17,7 +17,6 @@ import { authClient } from "@/lib/auth-client";
 
 const TITLES: Record<string, string> = {
   "/dashboard": "Dashboard",
-  "/ai": "AI Chat",
 };
 
 export const Route = createFileRoute("/_protected")({
