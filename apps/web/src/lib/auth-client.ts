@@ -1,6 +1,6 @@
-import { env } from "@srinil-stay/env/back-office";
+import { env } from "@srinil-stay/env/web";
 import { createAuthClient } from "better-auth/react";
 
 export const authClient = createAuthClient({
-  baseURL: env.VITE_SERVER_URL,
+  baseURL: env.NEXT_PUBLIC_SERVER_URL,
 });

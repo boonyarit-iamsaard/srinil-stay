@@ -4,9 +4,6 @@ import { Toaster } from "@srinil-stay/ui/components/sonner";
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 
-import { SiteFooter } from "@/components/site-footer";
-import { SiteHeader } from "@/components/site-header";
-
 import { Providers } from "./providers";
 
 export const metadata: Metadata = {
@@ -19,11 +16,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     <html lang="en" suppressHydrationWarning>
       <body>
         <Providers>
-          <div className="flex min-h-svh flex-col">
-            <SiteHeader />
-            <main className="flex-1">{children}</main>
-            <SiteFooter />
-          </div>
+          {children}
           <Toaster richColors />
         </Providers>
       </body>

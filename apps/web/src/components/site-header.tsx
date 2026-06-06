@@ -1,6 +1,6 @@
 import Link from "next/link";
-
 import { ModeToggle } from "./mode-toggle";
+import UserMenu from "./user-menu";
 
 export function SiteHeader() {
   return (
@@ -9,7 +9,10 @@ export function SiteHeader() {
         <Link className="font-semibold text-lg" href="/">
           Srinil Stay
         </Link>
-        <ModeToggle />
+        <div className="flex items-center gap-2">
+          <ModeToggle />
+          <UserMenu />
+        </div>
       </div>
     </header>
   );

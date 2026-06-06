@@ -200,9 +200,18 @@ importers:
 
   apps/web:
     dependencies:
+      '@srinil-stay/env':
+        specifier: workspace:*
+        version: link:../../packages/env
       '@srinil-stay/ui':
         specifier: workspace:*
         version: link:../../packages/ui
+      '@tanstack/react-form':
+        specifier: ^1.28.0
+        version: 1.33.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+      better-auth:
+        specifier: 'catalog:'
+        version: 1.6.11(@opentelemetry/api@1.9.1)(drizzle-kit@0.31.10)(drizzle-orm@0.45.2(@opentelemetry/api@1.9.1)(@types/pg@8.20.0)(kysely@0.28.17)(pg@8.21.0))(next@16.2.7(@opentelemetry/api@1.9.1)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(pg@8.21.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       lucide-react:
         specifier: ^1.8.0
         version: 1.17.0(react@19.2.6)
@@ -218,6 +227,12 @@ importers:
       react-dom:
         specifier: 'catalog:'
         version: 19.2.6(react@19.2.6)
+      sonner:
+        specifier: ^2.0.7
+        version: 2.0.7(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+      zod:
+        specifier: 'catalog:'
+        version: 4.4.3
     devDependencies:
       '@srinil-stay/config':
         specifier: workspace:*

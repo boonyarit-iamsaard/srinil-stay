@@ -31,7 +31,7 @@ export function createAuth() {
       usePlural: true,
       schema,
     }),
-    trustedOrigins: [env.CORS_ORIGIN],
+    trustedOrigins: env.CORS_ORIGIN,
     emailAndPassword: {
       enabled: true,
     },

@@ -10,12 +10,17 @@
     "types:check": "next build && tsc --noEmit"
   },
   "dependencies": {
+    "@srinil-stay/env": "workspace:*",
     "@srinil-stay/ui": "workspace:*",
+    "@tanstack/react-form": "^1.28.0",
+    "better-auth": "catalog:",
     "lucide-react": "^1.8.0",
     "next": "16.2.7",
     "next-themes": "catalog:",
     "react": "catalog:",
-    "react-dom": "catalog:"
+    "react-dom": "catalog:",
+    "sonner": "^2.0.7",
+    "zod": "catalog:"
   },
   "devDependencies": {
     "@srinil-stay/config": "workspace:*",

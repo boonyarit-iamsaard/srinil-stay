@@ -5,6 +5,7 @@
   "type": "module",
   "exports": {
     "./server": "./src/server.ts",
+    "./back-office": "./src/back-office.ts",
     "./web": "./src/web.ts"
   },
   "dependencies": {
