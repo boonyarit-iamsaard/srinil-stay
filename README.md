@@ -48,8 +48,11 @@ Then, run the development server:
 pnpm run dev
 ```
 
-Open [http://localhost:5173](http://localhost:5173) in your browser to see the web application.
-The API is running at [http://localhost:4000](http://localhost:4000).
+Local development ports:
+
+- Customer web app (Next.js): [http://localhost:3000](http://localhost:3000)
+- Back-office app (React + TanStack Router): [http://localhost:4000](http://localhost:4000)
+- Server API (Hono): [http://localhost:5000](http://localhost:5000)
 
 ## Production-Like Server Verification
 
@@ -62,14 +65,14 @@ against the Compose PostgreSQL service.
 make up
 ```
 
-The server is available at [http://localhost:4000](http://localhost:4000).
+The server is available at [http://localhost:5000](http://localhost:5000).
 
 ```bash
 make down
 ```
 
-The web app is intentionally not included in this production-like Compose setup
-until its deployment model is chosen.
+The web and back-office apps are intentionally not included in this
+production-like Compose setup until their deployment model is chosen.
 
 ## UI Customization
 
@@ -77,7 +80,7 @@ React web apps in this stack share shadcn/ui primitives through `packages/ui`.
 
 - Change design tokens and global styles in `packages/ui/src/styles/globals.css`
 - Update shared primitives in `packages/ui/src/components/*`
-- Adjust shadcn aliases or style config in `packages/ui/components.json` and `apps/web/components.json`
+- Adjust shadcn aliases or style config in `packages/ui/components.json` and `apps/back-office/components.json`
 
 ### Add more shared components
 
@@ -95,7 +98,7 @@ import { Button } from "@srinil-stay/ui/components/button";
 
 ### Add app-specific blocks
 
-If you want to add app-specific blocks instead of shared primitives, run the shadcn CLI from `apps/web`.
+If you want to add app-specific blocks instead of shared primitives, run the shadcn CLI from `apps/back-office`.
 
 ## Git Hooks and Formatting
 
@@ -106,8 +109,9 @@ If you want to add app-specific blocks instead of shared primitives, run the sha
 ```text
 srinil-stay/
 ├── apps/
-│   ├── web/         # Frontend application (React + TanStack Router)
-│   └── server/      # Backend API (Hono)
+│   ├── web/          # Customer-facing site (Next.js, SSR)
+│   ├── back-office/  # Staff operations app (React + TanStack Router)
+│   └── server/       # Backend API (Hono)
 ├── packages/
 │   ├── ui/          # Shared shadcn/ui components and styles
 │   ├── auth/        # Authentication configuration & logic
@@ -118,7 +122,8 @@ srinil-stay/
 
 - `pnpm run dev`: Start all applications in development mode
 - `pnpm run build`: Build all applications
-- `pnpm run dev:web`: Start only the web application
+- `pnpm run dev:web`: Start only the customer web app (Next.js)
+- `pnpm run dev:back-office`: Start only the back-office app
 - `pnpm run dev:server`: Start only the server
 - `pnpm run check-types`: Check TypeScript types across all apps
 - `pnpm run db:push`: Push schema changes to database

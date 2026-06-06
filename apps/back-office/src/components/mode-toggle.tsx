@@ -1,5 +1,3 @@
-"use client";
-
 import { Button } from "@srinil-stay/ui/components/button";
 import {
   DropdownMenu,

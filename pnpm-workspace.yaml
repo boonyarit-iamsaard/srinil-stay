@@ -23,6 +23,11 @@ strictDepBuilds: true
 allowBuilds:
   esbuild: true
   msw: true
+  # sharp: image-optimization native lib pulled in as a first-party
+  # optionalDependency of Next.js (apps/web). Binaries ship prebuilt via the
+  # @img/sharp-* registry packages; the install script only resolves/verifies
+  # them. Reputable, provenance-signed, and still gated by minimumReleaseAge.
+  sharp: true
 
 # Reject an update whose provenance is weaker than the version it replaces
 # (e.g. a release published without CI/CD attestation).

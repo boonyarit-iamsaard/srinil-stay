@@ -34,6 +34,6 @@ WORKDIR /app
 
 COPY --from=build /prod/server ./
 
-EXPOSE 4000
+EXPOSE 5000
 
 CMD ["node", "dist/index.mjs"]

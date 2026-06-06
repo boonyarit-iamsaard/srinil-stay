@@ -14,6 +14,7 @@
     "db:push": "turbo -F @srinil-stay/drizzle db:push",
     "db:studio": "turbo -F @srinil-stay/drizzle db:studio",
     "dev": "turbo dev",
+    "dev:back-office": "turbo -F back-office dev",
     "dev:server": "turbo -F server dev",
     "dev:web": "turbo -F web dev",
     "fix": "ultracite fix",
