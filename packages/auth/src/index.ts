@@ -39,7 +39,7 @@ export function createAuth() {
     baseURL: env.BETTER_AUTH_URL,
     advanced: {
       database: {
-        generateId: "uuid",
+        generateId: false,
       },
       defaultCookieAttributes: {
         sameSite: "none",

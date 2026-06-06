@@ -9,7 +9,7 @@ import {
 } from "drizzle-orm/pg-core";
 
 export const users = pgTable("users", {
-  id: uuid("id").default(sql`pg_catalog.gen_random_uuid()`).primaryKey(),
+  id: uuid("id").default(sql`uuidv7()`).primaryKey(),
   name: text("name").notNull(),
   email: text("email").notNull().unique(),
   emailVerified: boolean("email_verified").default(false).notNull(),
@@ -24,7 +24,7 @@ export const users = pgTable("users", {
 export const sessions = pgTable(
   "sessions",
   {
-    id: uuid("id").default(sql`pg_catalog.gen_random_uuid()`).primaryKey(),
+    id: uuid("id").default(sql`uuidv7()`).primaryKey(),
     expiresAt: timestamp("expires_at").notNull(),
     token: text("token").notNull().unique(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
@@ -43,7 +43,7 @@ export const sessions = pgTable(
 export const accounts = pgTable(
   "accounts",
   {
-    id: uuid("id").default(sql`pg_catalog.gen_random_uuid()`).primaryKey(),
+    id: uuid("id").default(sql`uuidv7()`).primaryKey(),
     accountId: text("account_id").notNull(),
     providerId: text("provider_id").notNull(),
     userId: uuid("user_id")
@@ -67,7 +67,7 @@ export const accounts = pgTable(
 export const verifications = pgTable(
   "verifications",
   {
-    id: uuid("id").default(sql`pg_catalog.gen_random_uuid()`).primaryKey(),
+    id: uuid("id").default(sql`uuidv7()`).primaryKey(),
     identifier: text("identifier").notNull(),
     value: text("value").notNull(),
     expiresAt: timestamp("expires_at").notNull(),
