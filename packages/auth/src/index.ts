@@ -1,4 +1,4 @@
-import { createDb } from "@srinil-stay/db";
+import { createDb } from "@srinil-stay/drizzle";
 import {
   accounts,
   accountsRelations,
@@ -7,7 +7,7 @@ import {
   users,
   usersRelations,
   verifications,
-} from "@srinil-stay/db/schema/auth";
+} from "@srinil-stay/drizzle/schema/auth";
 import { env } from "@srinil-stay/env/server";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";

@@ -93,9 +93,9 @@ importers:
       '@srinil-stay/auth':
         specifier: workspace:*
         version: link:../../packages/auth
-      '@srinil-stay/db':
+      '@srinil-stay/drizzle':
         specifier: workspace:*
-        version: link:../../packages/db
+        version: link:../../packages/drizzle
       '@srinil-stay/env':
         specifier: workspace:*
         version: link:../../packages/env
@@ -221,9 +221,9 @@ importers:
 
   packages/auth:
     dependencies:
-      '@srinil-stay/db':
+      '@srinil-stay/drizzle':
         specifier: workspace:*
-        version: link:../db
+        version: link:../drizzle
       '@srinil-stay/env':
         specifier: workspace:*
         version: link:../env
@@ -246,7 +246,7 @@ importers:
 
   packages/config: {}
 
-  packages/db:
+  packages/drizzle:
     dependencies:
       '@srinil-stay/env':
         specifier: workspace:*

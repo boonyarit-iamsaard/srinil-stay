@@ -11,7 +11,7 @@
   },
   "scripts": {},
   "dependencies": {
-    "@srinil-stay/db": "workspace:*",
+    "@srinil-stay/drizzle": "workspace:*",
     "@srinil-stay/env": "workspace:*",
     "better-auth": "catalog:",
     "dotenv": "catalog:",

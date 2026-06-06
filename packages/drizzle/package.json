@@ -1,5 +1,5 @@
 {
-  "name": "@srinil-stay/db",
+  "name": "@srinil-stay/drizzle",
   "type": "module",
   "exports": {
     ".": {
