@@ -12,9 +12,9 @@
   },
   "dependencies": {
     "@ai-sdk/react": "^3.0.3",
-    "@grammar-correction-tool/env": "workspace:*",
-    "@grammar-correction-tool/ui": "workspace:*",
     "@hookform/resolvers": "^5.2.2",
+    "@srinil-stay/env": "workspace:*",
+    "@srinil-stay/ui": "workspace:*",
     "@tailwindcss/vite": "^4.2.2",
     "@tanstack/react-form": "^1.28.0",
     "@tanstack/react-router": "^1.168.22",
@@ -30,7 +30,7 @@
     "zod": "catalog:"
   },
   "devDependencies": {
-    "@grammar-correction-tool/config": "workspace:*",
+    "@srinil-stay/config": "workspace:*",
     "@tanstack/react-router-devtools": "^1.166.13",
     "@tanstack/router-plugin": "^1.167.22",
     "@types/node": "catalog:",

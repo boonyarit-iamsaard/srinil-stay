@@ -1,7 +1,4 @@
-import {
-  Avatar,
-  AvatarFallback,
-} from "@grammar-correction-tool/ui/components/avatar";
+import { Avatar, AvatarFallback } from "@srinil-stay/ui/components/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,14 +7,14 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@grammar-correction-tool/ui/components/dropdown-menu";
+} from "@srinil-stay/ui/components/dropdown-menu";
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarMenuSkeleton,
   useSidebar,
-} from "@grammar-correction-tool/ui/components/sidebar";
+} from "@srinil-stay/ui/components/sidebar";
 import { useNavigate } from "@tanstack/react-router";
 import { ChevronsUpDown, LogOut } from "lucide-react";
 

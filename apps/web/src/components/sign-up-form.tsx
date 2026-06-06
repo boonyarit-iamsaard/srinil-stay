@@ -1,4 +1,4 @@
-import { Button } from "@grammar-correction-tool/ui/components/button";
+import { Button } from "@srinil-stay/ui/components/button";
 import {
   Card,
   CardContent,
@@ -6,9 +6,9 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@grammar-correction-tool/ui/components/card";
-import { Input } from "@grammar-correction-tool/ui/components/input";
-import { Label } from "@grammar-correction-tool/ui/components/label";
+} from "@srinil-stay/ui/components/card";
+import { Input } from "@srinil-stay/ui/components/input";
+import { Label } from "@srinil-stay/ui/components/label";
 import { useForm } from "@tanstack/react-form";
 import { useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";

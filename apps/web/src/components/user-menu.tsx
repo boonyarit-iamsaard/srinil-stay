@@ -1,4 +1,4 @@
-import { Button } from "@grammar-correction-tool/ui/components/button";
+import { Button } from "@srinil-stay/ui/components/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -7,8 +7,8 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@grammar-correction-tool/ui/components/dropdown-menu";
-import { Skeleton } from "@grammar-correction-tool/ui/components/skeleton";
+} from "@srinil-stay/ui/components/dropdown-menu";
+import { Skeleton } from "@srinil-stay/ui/components/skeleton";
 import { Link, useNavigate } from "@tanstack/react-router";
 
 import { authClient } from "@/lib/auth-client";

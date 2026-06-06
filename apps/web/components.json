@@ -13,8 +13,8 @@
   "iconLibrary": "lucide",
   "aliases": {
     "components": "@/components",
-    "utils": "@grammar-correction-tool/ui/lib/utils",
-    "ui": "@grammar-correction-tool/ui/components",
+    "utils": "@srinil-stay/ui/lib/utils",
+    "ui": "@srinil-stay/ui/components",
     "lib": "@/lib",
     "hooks": "@/hooks"
   },

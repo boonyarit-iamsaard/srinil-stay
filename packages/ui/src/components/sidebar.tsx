@@ -2,24 +2,24 @@
 
 import { mergeProps } from "@base-ui/react/merge-props";
 import { useRender } from "@base-ui/react/use-render";
-import { Button } from "@grammar-correction-tool/ui/components/button";
-import { Input } from "@grammar-correction-tool/ui/components/input";
-import { Separator } from "@grammar-correction-tool/ui/components/separator";
+import { Button } from "@srinil-stay/ui/components/button";
+import { Input } from "@srinil-stay/ui/components/input";
+import { Separator } from "@srinil-stay/ui/components/separator";
 import {
   Sheet,
   SheetContent,
   SheetDescription,
   SheetHeader,
   SheetTitle,
-} from "@grammar-correction-tool/ui/components/sheet";
-import { Skeleton } from "@grammar-correction-tool/ui/components/skeleton";
+} from "@srinil-stay/ui/components/sheet";
+import { Skeleton } from "@srinil-stay/ui/components/skeleton";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from "@grammar-correction-tool/ui/components/tooltip";
-import { useIsMobile } from "@grammar-correction-tool/ui/hooks/use-mobile";
-import { cn } from "@grammar-correction-tool/ui/lib/utils";
+} from "@srinil-stay/ui/components/tooltip";
+import { useIsMobile } from "@srinil-stay/ui/hooks/use-mobile";
+import { cn } from "@srinil-stay/ui/lib/utils";
 import { cva, type VariantProps } from "class-variance-authority";
 import { PanelLeftIcon } from "lucide-react";
 import {

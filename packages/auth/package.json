@@ -1,5 +1,5 @@
 {
-  "name": "@grammar-correction-tool/auth",
+  "name": "@srinil-stay/auth",
   "type": "module",
   "exports": {
     ".": {
@@ -11,14 +11,14 @@
   },
   "scripts": {},
   "dependencies": {
-    "@grammar-correction-tool/db": "workspace:*",
-    "@grammar-correction-tool/env": "workspace:*",
+    "@srinil-stay/db": "workspace:*",
+    "@srinil-stay/env": "workspace:*",
     "better-auth": "catalog:",
     "dotenv": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {
-    "@grammar-correction-tool/config": "workspace:*",
+    "@srinil-stay/config": "workspace:*",
     "typescript": "catalog:"
   }
 }

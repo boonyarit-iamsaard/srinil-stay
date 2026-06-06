@@ -1,7 +1,7 @@
 import { devToolsMiddleware } from "@ai-sdk/devtools";
 import { google } from "@ai-sdk/google";
-import { auth } from "@grammar-correction-tool/auth";
-import { env } from "@grammar-correction-tool/env/server";
+import { auth } from "@srinil-stay/auth";
+import { env } from "@srinil-stay/env/server";
 import { convertToModelMessages, streamText, wrapLanguageModel } from "ai";
 import { Hono } from "hono";
 import { cors } from "hono/cors";

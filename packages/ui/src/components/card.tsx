@@ -1,4 +1,4 @@
-import { cn } from "@grammar-correction-tool/ui/lib/utils";
+import { cn } from "@srinil-stay/ui/lib/utils";
 import type * as React from "react";
 
 function Card({

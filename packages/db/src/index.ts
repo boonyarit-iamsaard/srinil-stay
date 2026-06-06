@@ -1,4 +1,4 @@
-import { env } from "@grammar-correction-tool/env/server";
+import { env } from "@srinil-stay/env/server";
 import { drizzle } from "drizzle-orm/node-postgres";
 
 import {

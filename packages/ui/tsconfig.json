@@ -1,11 +1,11 @@
 {
-  "extends": "@grammar-correction-tool/config/tsconfig.base.json",
+  "extends": "@srinil-stay/config/tsconfig.base.json",
   "compilerOptions": {
     "jsx": "react-jsx",
     "lib": ["ESNext", "DOM", "DOM.Iterable"],
     "types": [],
     "paths": {
-      "@grammar-correction-tool/ui/*": ["./src/*"]
+      "@srinil-stay/ui/*": ["./src/*"]
     },
     "strictNullChecks": true
   },

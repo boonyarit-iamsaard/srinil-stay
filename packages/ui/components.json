@@ -12,11 +12,11 @@
   },
   "iconLibrary": "lucide",
   "aliases": {
-    "components": "@grammar-correction-tool/ui/components",
-    "utils": "@grammar-correction-tool/ui/lib/utils",
-    "hooks": "@grammar-correction-tool/ui/hooks",
-    "lib": "@grammar-correction-tool/ui/lib",
-    "ui": "@grammar-correction-tool/ui/components"
+    "components": "@srinil-stay/ui/components",
+    "utils": "@srinil-stay/ui/lib/utils",
+    "hooks": "@srinil-stay/ui/hooks",
+    "lib": "@srinil-stay/ui/lib",
+    "ui": "@srinil-stay/ui/components"
   },
   "menuColor": "default",
   "menuAccent": "subtle",

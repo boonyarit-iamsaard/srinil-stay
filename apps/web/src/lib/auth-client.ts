@@ -1,4 +1,4 @@
-import { env } from "@grammar-correction-tool/env/web";
+import { env } from "@srinil-stay/env/web";
 import { createAuthClient } from "better-auth/react";
 
 export const authClient = createAuthClient({

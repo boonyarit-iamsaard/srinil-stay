@@ -8,7 +8,7 @@ export default function PublicHeader() {
     <header className="border-b">
       <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-3">
         <Link className="font-semibold text-lg" to="/">
-          Grammar Correction Tool
+          Srinil Stay
         </Link>
         <div className="flex items-center gap-2">
           <ModeToggle />

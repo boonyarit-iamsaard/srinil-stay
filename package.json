@@ -1,5 +1,5 @@
 {
-  "name": "grammar-correction-tool",
+  "name": "srinil-stay",
   "private": true,
   "workspaces": [
     "apps/*",
@@ -9,14 +9,14 @@
   "scripts": {
     "build": "turbo build",
     "check": "ultracite check",
-    "db:down": "turbo -F @grammar-correction-tool/db db:down",
-    "db:generate": "turbo -F @grammar-correction-tool/db db:generate",
-    "db:migrate": "turbo -F @grammar-correction-tool/db db:migrate",
-    "db:push": "turbo -F @grammar-correction-tool/db db:push",
-    "db:start": "turbo -F @grammar-correction-tool/db db:start",
-    "db:stop": "turbo -F @grammar-correction-tool/db db:stop",
-    "db:studio": "turbo -F @grammar-correction-tool/db db:studio",
-    "db:watch": "turbo -F @grammar-correction-tool/db db:watch",
+    "db:down": "turbo -F @srinil-stay/db db:down",
+    "db:generate": "turbo -F @srinil-stay/db db:generate",
+    "db:migrate": "turbo -F @srinil-stay/db db:migrate",
+    "db:push": "turbo -F @srinil-stay/db db:push",
+    "db:start": "turbo -F @srinil-stay/db db:start",
+    "db:stop": "turbo -F @srinil-stay/db db:stop",
+    "db:studio": "turbo -F @srinil-stay/db db:studio",
+    "db:watch": "turbo -F @srinil-stay/db db:watch",
     "dev": "turbo dev",
     "dev:server": "turbo -F server dev",
     "dev:web": "turbo -F web dev",
@@ -30,13 +30,13 @@
     ]
   },
   "dependencies": {
-    "@grammar-correction-tool/env": "workspace:*",
+    "@srinil-stay/env": "workspace:*",
     "dotenv": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {
     "@biomejs/biome": "2.4.15",
-    "@grammar-correction-tool/config": "workspace:*",
+    "@srinil-stay/config": "workspace:*",
     "@types/node": "catalog:",
     "husky": "^9.1.7",
     "lint-staged": "^16.2.7",

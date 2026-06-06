@@ -1,7 +1,7 @@
 import { Dialog as SheetPrimitive } from "@base-ui/react/dialog";
-import { Button } from "@grammar-correction-tool/ui/components/button";
+import { Button } from "@srinil-stay/ui/components/button";
 
-import { cn } from "@grammar-correction-tool/ui/lib/utils";
+import { cn } from "@srinil-stay/ui/lib/utils";
 import { XIcon } from "lucide-react";
 import type * as React from "react";
 

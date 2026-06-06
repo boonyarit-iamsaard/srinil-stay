@@ -1,10 +1,10 @@
-import { Button } from "@grammar-correction-tool/ui/components/button";
+import { Button } from "@srinil-stay/ui/components/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@grammar-correction-tool/ui/components/dropdown-menu";
+} from "@srinil-stay/ui/components/dropdown-menu";
 import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 

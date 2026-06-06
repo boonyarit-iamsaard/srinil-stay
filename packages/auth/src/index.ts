@@ -1,4 +1,4 @@
-import { createDb } from "@grammar-correction-tool/db";
+import { createDb } from "@srinil-stay/db";
 import {
   accounts,
   accountsRelations,
@@ -7,8 +7,8 @@ import {
   users,
   usersRelations,
   verifications,
-} from "@grammar-correction-tool/db/schema/auth";
-import { env } from "@grammar-correction-tool/env/server";
+} from "@srinil-stay/db/schema/auth";
+import { env } from "@srinil-stay/env/server";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 

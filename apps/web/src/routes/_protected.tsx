@@ -1,9 +1,9 @@
-import { Separator } from "@grammar-correction-tool/ui/components/separator";
+import { Separator } from "@srinil-stay/ui/components/separator";
 import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
-} from "@grammar-correction-tool/ui/components/sidebar";
+} from "@srinil-stay/ui/components/sidebar";
 import {
   createFileRoute,
   Outlet,

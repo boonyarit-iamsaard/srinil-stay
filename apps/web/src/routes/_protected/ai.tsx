@@ -1,7 +1,7 @@
 import { useChat } from "@ai-sdk/react";
-import { env } from "@grammar-correction-tool/env/web";
-import { Button } from "@grammar-correction-tool/ui/components/button";
-import { Input } from "@grammar-correction-tool/ui/components/input";
+import { env } from "@srinil-stay/env/web";
+import { Button } from "@srinil-stay/ui/components/button";
+import { Input } from "@srinil-stay/ui/components/input";
 import { createFileRoute } from "@tanstack/react-router";
 import { DefaultChatTransport } from "ai";
 import { Send } from "lucide-react";

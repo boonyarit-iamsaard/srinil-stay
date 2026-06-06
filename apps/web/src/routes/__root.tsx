@@ -1,4 +1,4 @@
-import { Toaster } from "@grammar-correction-tool/ui/components/sonner";
+import { Toaster } from "@srinil-stay/ui/components/sonner";
 import {
   createRootRouteWithContext,
   HeadContent,
@@ -17,11 +17,11 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
   head: () => ({
     meta: [
       {
-        title: "grammar-correction-tool",
+        title: "Srinil Stay",
       },
       {
         name: "description",
-        content: "grammar-correction-tool is a web application",
+        content: "Srinil Stay is a web application for booking your stay.",
       },
     ],
     links: [

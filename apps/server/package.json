@@ -12,10 +12,10 @@
   "dependencies": {
     "@ai-sdk/devtools": "^0.0.2",
     "@ai-sdk/google": "^3.0.1",
-    "@grammar-correction-tool/auth": "workspace:*",
-    "@grammar-correction-tool/db": "workspace:*",
-    "@grammar-correction-tool/env": "workspace:*",
     "@hono/node-server": "^1.14.4",
+    "@srinil-stay/auth": "workspace:*",
+    "@srinil-stay/db": "workspace:*",
+    "@srinil-stay/env": "workspace:*",
     "ai": "catalog:",
     "better-auth": "catalog:",
     "dotenv": "catalog:",
@@ -23,7 +23,7 @@
     "zod": "catalog:"
   },
   "devDependencies": {
-    "@grammar-correction-tool/config": "workspace:*",
+    "@srinil-stay/config": "workspace:*",
     "@types/node": "catalog:",
     "tsdown": "^0.21.9",
     "tsx": "^4.19.2",
