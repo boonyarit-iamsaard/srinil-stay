@@ -28,7 +28,12 @@ pnpm install
 
 This project uses PostgreSQL with Drizzle ORM.
 
-1. Make sure you have a PostgreSQL database set up.
+1. Start the PostgreSQL container:
+
+```bash
+make infra-up
+```
+
 2. Update your `apps/server/.env` file with your PostgreSQL connection details.
 
 3. Apply the schema to your database:
@@ -86,7 +91,7 @@ srinil-stay/
 ├── packages/
 │   ├── ui/          # Shared shadcn/ui components and styles
 │   ├── auth/        # Authentication configuration & logic
-│   └── db/          # Database schema & queries
+│   └── drizzle/     # Database schema & queries
 ```
 
 ## Available Scripts
@@ -100,4 +105,6 @@ srinil-stay/
 - `pnpm run db:generate`: Generate database client/types
 - `pnpm run db:migrate`: Run database migrations
 - `pnpm run db:studio`: Open database studio UI
+- `make infra-up`: Start local development infrastructure
+- `make infra-down`: Stop and remove local development infrastructure
 - `pnpm run check`: Run Biome formatting and linting
