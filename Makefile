@@ -1,7 +1,13 @@
-.PHONY: infra-up infra-down
+.PHONY: infra-up infra-down up down
 
 infra-up:
-	docker compose up -d --wait
+	docker compose -f compose.yaml up -d --wait
 
 infra-down:
-	docker compose down
+	docker compose -f compose.yaml down
+
+up:
+	docker compose -f compose.yaml -f compose.override.yaml up -d --build --wait
+
+down:
+	docker compose -f compose.yaml -f compose.override.yaml down

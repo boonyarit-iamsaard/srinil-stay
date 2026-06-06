@@ -1,3 +1,4 @@
+import { serve } from "@hono/node-server";
 import { auth } from "@srinil-stay/auth";
 import { env } from "@srinil-stay/env/server";
 import { Hono } from "hono";
@@ -21,11 +22,10 @@ app.on(["POST", "GET"], "/api/auth/*", (c) => auth.handler(c.req.raw));
 
 app.get("/", (c) => c.text("OK"));
 
-import { serve } from "@hono/node-server";
-
 serve(
   {
     fetch: app.fetch,
+    hostname: "0.0.0.0",
     port: 4000,
   },
   (info) => {

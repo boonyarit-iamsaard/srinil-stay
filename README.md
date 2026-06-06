@@ -30,17 +30,17 @@ This project uses PostgreSQL with Drizzle ORM.
 
 1. Start the PostgreSQL container:
 
-```bash
-make infra-up
-```
+   ```bash
+   make infra-up
+   ```
 
 2. Update your `apps/server/.env` file with your PostgreSQL connection details.
 
 3. Apply the schema to your database:
 
-```bash
-pnpm run db:push
-```
+   ```bash
+   pnpm run db:push
+   ```
 
 Then, run the development server:
 
@@ -49,7 +49,27 @@ pnpm run dev
 ```
 
 Open [http://localhost:5173](http://localhost:5173) in your browser to see the web application.
-The API is running at [http://localhost:3000](http://localhost:3000).
+The API is running at [http://localhost:4000](http://localhost:4000).
+
+## Production-Like Server Verification
+
+The default development infrastructure uses `compose.yaml` directly and starts
+PostgreSQL only. `compose.override.yaml` is reserved for verifying the deployed
+stack shape locally; it currently builds and runs the production server image
+against the Compose PostgreSQL service.
+
+```bash
+make up
+```
+
+The server is available at [http://localhost:4000](http://localhost:4000).
+
+```bash
+make down
+```
+
+The web app is intentionally not included in this production-like Compose setup
+until its deployment model is chosen.
 
 ## UI Customization
 
@@ -83,7 +103,7 @@ If you want to add app-specific blocks instead of shared primitives, run the sha
 
 ## Project Structure
 
-```
+```text
 srinil-stay/
 ├── apps/
 │   ├── web/         # Frontend application (React + TanStack Router)
@@ -107,4 +127,6 @@ srinil-stay/
 - `pnpm run db:studio`: Open database studio UI
 - `make infra-up`: Start local development infrastructure
 - `make infra-down`: Stop and remove local development infrastructure
+- `make up`: Build and start the production-like deployed stack
+- `make down`: Stop and remove the production-like deployed stack
 - `pnpm run check`: Run Biome formatting and linting
