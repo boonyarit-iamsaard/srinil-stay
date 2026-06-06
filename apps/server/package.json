@@ -5,7 +5,6 @@
   "scripts": {
     "build": "tsdown",
     "types:check": "tsc -b",
-    "compile": "bun build --compile --minify --sourcemap --bytecode ./src/index.ts --outfile server",
     "dev": "tsx watch src/index.ts",
     "start": "node dist/index.mjs"
   },

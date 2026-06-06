@@ -1,6 +1,10 @@
-# srinil-stay
+# Srinil Stay
 
-This project was created with [Better-T-Stack](https://github.com/AmanVarshney01/create-better-t-stack), a modern TypeScript stack that combines React, TanStack Router, Hono, and more.
+A management and booking system for **Srinil Stay**, a single small homestay in
+Phatthalung, Thailand, with roughly ten bookable units. Guests browse unit
+availability and book stays through the customer-facing web app, while staff
+manage units, availability, and bookings through the back-office app. See
+[`CONTEXT.md`](CONTEXT.md) for the domain glossary.
 
 ## Features
 
