@@ -19,6 +19,7 @@
     "dev:web": "turbo -F web dev",
     "fix": "ultracite fix",
     "prepare": "husky",
+    "test": "turbo test",
     "types:check": "turbo types:check"
   },
   "lint-staged": {

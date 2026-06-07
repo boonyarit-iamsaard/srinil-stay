@@ -11,12 +11,13 @@ import {
   useRouterState,
 } from "@tanstack/react-router";
 
-import AppSidebar from "@/components/app-sidebar";
+import { AppSidebar } from "@/components/app-sidebar";
 import { ModeToggle } from "@/components/mode-toggle";
 import { authClient } from "@/lib/auth-client";
 
 const TITLES: Record<string, string> = {
   "/dashboard": "Dashboard",
+  "/invitations/create": "Invitations",
 };
 
 export const Route = createFileRoute("/_protected")({

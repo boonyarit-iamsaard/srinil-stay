@@ -21,13 +21,21 @@ strictDepBuilds: true
 
 # The only packages allowed to run lifecycle scripts. Keep this list minimal.
 allowBuilds:
+  # cpu-features / ssh2 / protobufjs: transitive deps of @testcontainers
+  # (dockerode -> ssh2). Tests talk to Docker over the local socket, so ssh2's
+  # native build (and its optional cpu-features accelerator) and protobufjs's
+  # postinstall are not needed. Explicitly declined to keep the build set
+  # pinned and the verifyDepsBeforeRun gate satisfied.
+  cpu-features: false
   esbuild: true
   msw: true
+  protobufjs: false
   # sharp: image-optimization native lib pulled in as a first-party
   # optionalDependency of Next.js (apps/web). Binaries ship prebuilt via the
   # @img/sharp-* registry packages; the install script only resolves/verifies
   # them. Reputable, provenance-signed, and still gated by minimumReleaseAge.
   sharp: true
+  ssh2: false
 
 # Reject an update whose provenance is weaker than the version it replaces
 # (e.g. a release published without CI/CD attestation).

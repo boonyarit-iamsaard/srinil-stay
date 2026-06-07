@@ -15,6 +15,10 @@ export const env = createEnv({
     NODE_ENV: z
       .enum(["development", "production", "test"])
       .default("development"),
+    SMTP_HOST: z.string().min(1),
+    SMTP_PORT: z.coerce.number().int().positive(),
+    MAIL_FROM: z.string().min(1),
+    BACK_OFFICE_URL: z.url(),
   },
   runtimeEnv: process.env,
   emptyStringAsUndefined: true,

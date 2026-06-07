@@ -15,6 +15,8 @@ import { Route as AuthRouteImport } from './routes/_auth'
 import { Route as PublicIndexRouteImport } from './routes/_public/index'
 import { Route as ProtectedDashboardRouteImport } from './routes/_protected/dashboard'
 import { Route as AuthLoginRouteImport } from './routes/_auth/login'
+import { Route as ProtectedInvitationsCreateRouteImport } from './routes/_protected/invitations/create'
+import { Route as AuthInvitationsAcceptRouteImport } from './routes/_auth/invitations/accept'
 
 const PublicRoute = PublicRouteImport.update({
   id: '/_public',
@@ -43,16 +45,31 @@ const AuthLoginRoute = AuthLoginRouteImport.update({
   path: '/login',
   getParentRoute: () => AuthRoute,
 } as any)
+const ProtectedInvitationsCreateRoute =
+  ProtectedInvitationsCreateRouteImport.update({
+    id: '/invitations/create',
+    path: '/invitations/create',
+    getParentRoute: () => ProtectedRoute,
+  } as any)
+const AuthInvitationsAcceptRoute = AuthInvitationsAcceptRouteImport.update({
+  id: '/invitations/accept',
+  path: '/invitations/accept',
+  getParentRoute: () => AuthRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof PublicIndexRoute
   '/login': typeof AuthLoginRoute
   '/dashboard': typeof ProtectedDashboardRoute
+  '/invitations/accept': typeof AuthInvitationsAcceptRoute
+  '/invitations/create': typeof ProtectedInvitationsCreateRoute
 }
 export interface FileRoutesByTo {
   '/': typeof PublicIndexRoute
   '/login': typeof AuthLoginRoute
   '/dashboard': typeof ProtectedDashboardRoute
+  '/invitations/accept': typeof AuthInvitationsAcceptRoute
+  '/invitations/create': typeof ProtectedInvitationsCreateRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -62,12 +79,24 @@ export interface FileRoutesById {
   '/_auth/login': typeof AuthLoginRoute
   '/_protected/dashboard': typeof ProtectedDashboardRoute
   '/_public/': typeof PublicIndexRoute
+  '/_auth/invitations/accept': typeof AuthInvitationsAcceptRoute
+  '/_protected/invitations/create': typeof ProtectedInvitationsCreateRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login' | '/dashboard'
+  fullPaths:
+    | '/'
+    | '/login'
+    | '/dashboard'
+    | '/invitations/accept'
+    | '/invitations/create'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/dashboard'
+  to:
+    | '/'
+    | '/login'
+    | '/dashboard'
+    | '/invitations/accept'
+    | '/invitations/create'
   id:
     | '__root__'
     | '/_auth'
@@ -76,6 +105,8 @@ export interface FileRouteTypes {
     | '/_auth/login'
     | '/_protected/dashboard'
     | '/_public/'
+    | '/_auth/invitations/accept'
+    | '/_protected/invitations/create'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -128,25 +159,43 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthLoginRouteImport
       parentRoute: typeof AuthRoute
     }
+    '/_protected/invitations/create': {
+      id: '/_protected/invitations/create'
+      path: '/invitations/create'
+      fullPath: '/invitations/create'
+      preLoaderRoute: typeof ProtectedInvitationsCreateRouteImport
+      parentRoute: typeof ProtectedRoute
+    }
+    '/_auth/invitations/accept': {
+      id: '/_auth/invitations/accept'
+      path: '/invitations/accept'
+      fullPath: '/invitations/accept'
+      preLoaderRoute: typeof AuthInvitationsAcceptRouteImport
+      parentRoute: typeof AuthRoute
+    }
   }
 }
 
 interface AuthRouteChildren {
   AuthLoginRoute: typeof AuthLoginRoute
+  AuthInvitationsAcceptRoute: typeof AuthInvitationsAcceptRoute
 }
 
 const AuthRouteChildren: AuthRouteChildren = {
   AuthLoginRoute: AuthLoginRoute,
+  AuthInvitationsAcceptRoute: AuthInvitationsAcceptRoute,
 }
 
 const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
 
 interface ProtectedRouteChildren {
   ProtectedDashboardRoute: typeof ProtectedDashboardRoute
+  ProtectedInvitationsCreateRoute: typeof ProtectedInvitationsCreateRoute
 }
 
 const ProtectedRouteChildren: ProtectedRouteChildren = {
   ProtectedDashboardRoute: ProtectedDashboardRoute,
+  ProtectedInvitationsCreateRoute: ProtectedInvitationsCreateRoute,
 }
 
 const ProtectedRouteWithChildren = ProtectedRoute._addFileChildren(

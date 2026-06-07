@@ -11,21 +11,27 @@ import {
   SidebarRail,
 } from "@srinil-stay/ui/components/sidebar";
 import { Link, useRouterState } from "@tanstack/react-router";
-import { LayoutDashboard, type LucideIcon, Sparkles } from "lucide-react";
+import {
+  LayoutDashboard,
+  type LucideIcon,
+  Sparkles,
+  UserPlus,
+} from "lucide-react";
 
 import NavUser from "./nav-user";
 
 interface NavItem {
   icon: LucideIcon;
   title: string;
-  to: "/dashboard";
+  to: "/dashboard" | "/invitations/create";
 }
 
 const NAV_ITEMS: NavItem[] = [
   { title: "Dashboard", to: "/dashboard", icon: LayoutDashboard },
+  { title: "Invitations", to: "/invitations/create", icon: UserPlus },
 ];
 
-export default function AppSidebar() {
+export function AppSidebar() {
   const pathname = useRouterState({
     select: (state) => state.location.pathname,
   });

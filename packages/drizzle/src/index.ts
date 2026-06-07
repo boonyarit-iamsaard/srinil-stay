@@ -10,6 +10,7 @@ import {
   usersRelations,
   verifications,
 } from "./schema/auth";
+import { invitations } from "./schema/invitations";
 
 const schema = {
   accounts,
@@ -19,6 +20,7 @@ const schema = {
   users,
   usersRelations,
   verifications,
+  invitations,
 };
 
 export function createDb() {

@@ -36,3 +36,12 @@ of the **admin app**. Few in number.
 
 A Guest's reservation of a Unit for a date range, including payment. Owned
 server-side by the Hono API.
+
+### Invitation
+
+A single-use, token-bearing email offer that lets a new person become Staff.
+Created by an existing Staff member and consumed once when the recipient
+accepts. The only way a Staff account comes into being (aside from the initial
+bootstrap, which is separate).
+
+_Avoid_: invite (as a noun), signup — Staff are invited, never self-registered.
