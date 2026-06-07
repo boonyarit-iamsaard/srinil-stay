@@ -10,7 +10,7 @@ via Better-Auth's `useSession()` client hook, shows a loader while pending, and
 redirects to `/login` when there is none — and adds **no chrome of its own**.
 
 It deliberately does **not** reuse `apps/back-office`'s `_protected` shell
-(`SidebarProvider` + `AppSidebar`). The back-office sidebar is an internal-tool
+(`SidebarProvider` and `AppSidebar`). The back-office sidebar is an internal-tool
 pattern; the Guest protected area uses the consumer top-nav instead — `/account`
 renders inside the public site header (with an account menu), and `/checkout`
 renders bare for a focused, distraction-free payment flow.
@@ -20,7 +20,7 @@ The route groups mirror back-office's three layouts:
 | back-office (TanStack) | web (Next App Router)        | chrome                       |
 | ---------------------- | ---------------------------- | ---------------------------- |
 | `_auth`                | `app/(auth)/layout.tsx`      | centered card, no site shell |
-| `_public`              | `app/(public)/layout.tsx`    | site header + footer         |
+| `_public`              | `app/(public)/layout.tsx`    | site header and footer       |
 | `_protected`           | `app/(protected)/layout.tsx` | **guard only — no shell**    |
 
 ## Why this is worth recording

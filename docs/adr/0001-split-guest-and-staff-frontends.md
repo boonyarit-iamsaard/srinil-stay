@@ -11,7 +11,7 @@ Srinil Stay is served by **two frontend apps over one shared Hono API**:
   fast on mobile, and produce good link/OG previews — none of which a
   client-rendered SPA delivers well.
 - `apps/back-office` — the internal **Staff** operations app (formerly
-  `apps/web`). Stays a **Vite + TanStack Router SPA**, which is the right shape
+  `apps/web`). Stays a **Vite and TanStack Router SPA**, which is the right shape
   for an authenticated internal dashboard with no SEO needs.
 - `apps/server` (Hono) remains the **single source of truth** for all business
   logic, bookings, and payment webhooks. Both frontends are thin clients.
@@ -44,7 +44,7 @@ otherwise question and might "fix" wrongly:
 
 ## Considered and rejected
 
-- **One app with public + protected route groups** — rejected: can't give the
+- **One app with public and protected route groups** — rejected: can't give the
   public funnel SSR/SEO without imposing it (and the admin auth surface) on the
   whole app.
 - **TanStack Start for the Guest app** (one ecosystem across both apps) —

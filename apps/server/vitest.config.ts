@@ -13,7 +13,7 @@ export default defineConfig({
     // Run test files one at a time so the shared Testcontainers Postgres isn't
     // truncated by one file's beforeEach while another file is mid-test.
     fileParallelism: false,
-    hookTimeout: 120_000, // container start + schema push on first run
+    hookTimeout: 120_000, // container start and schema push on first run
     testTimeout: 30_000,
   },
 });

@@ -2,7 +2,7 @@ import { db } from "@srinil-stay/drizzle";
 import { sql } from "drizzle-orm";
 import { beforeEach } from "vitest";
 
-// Clean slate between tests. CASCADE + RESTART IDENTITY covers the auth tables
+// Clean slate between tests. CASCADE and RESTART IDENTITY covers the auth tables
 // and the invitations table in one statement.
 beforeEach(async () => {
   await db.execute(

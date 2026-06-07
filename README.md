@@ -73,7 +73,7 @@ most recent email. See
 Local development ports:
 
 - Customer web app (Next.js): [http://localhost:3000](http://localhost:3000)
-- Back-office app (React + TanStack Router): [http://localhost:4000](http://localhost:4000)
+- Back-office app (React and TanStack Router): [http://localhost:4000](http://localhost:4000)
 - Server API (Hono): [http://localhost:5000](http://localhost:5000)
 
 ## Production-Like Server Verification
@@ -132,7 +132,7 @@ If you want to add app-specific blocks instead of shared primitives, run the sha
 srinil-stay/
 ├── apps/
 │   ├── web/          # Customer-facing site (Next.js, SSR)
-│   ├── back-office/  # Staff operations app (React + TanStack Router)
+│   ├── back-office/  # Staff operations app (React and TanStack Router)
 │   └── server/       # Backend API (Hono)
 ├── packages/
 │   ├── ui/          # Shared shadcn/ui components and styles

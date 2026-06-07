@@ -120,7 +120,7 @@ Write code that is **accessible, performant, type-safe, and maintainable**. Focu
 - Use `next/head` or App Router metadata API for head elements
 - Use Server Components for async data fetching instead of async Client Components
 
-**React 19+:**
+**React 19 and later:**
 
 - Use ref as a prop instead of `React.forwardRef`
 

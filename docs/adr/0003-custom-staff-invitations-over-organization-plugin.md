@@ -8,9 +8,9 @@ Staff are onboarded through a **hand-rolled `invitations` table and an
 `invitations` feature slice** in the Hono API (`POST /invitations`,
 `GET /invitations/:token`, `POST /invitations/accept`) — **not** through Better
 Auth's `organization` plugin, even though that plugin ships an email-invitation
-flow (invite/accept/reject + email hook) out of the box.
+flow (invite/accept/reject and email hook) out of the box.
 
-An existing Staff member supplies a name + email; the API stores a single-use,
+An existing Staff member supplies a name and email; the API stores a single-use,
 token-bearing `Invitation` (12h expiry) and emails an accept link. The recipient
 sets a password; acceptance creates the Better Auth user through the Better Auth
 `admin` plugin's server-side `createUser` API and assigns `role = staff`. State
@@ -32,7 +32,7 @@ just use it?"_ They might "fix" this by adopting the plugin. That would be wrong
 - The plugin's invitations are coupled to _org membership_, not to "becoming
   Staff." We'd be bending its mental model permanently to fit a concept it
   doesn't represent.
-- The custom table is small and owns its shape: `UNIQUE(email)` + upsert makes
+- The custom table is small and owns its shape: `UNIQUE(email)` and upsert makes
   `POST /invitations` idempotent (resend rotates the token in place); an atomic
   conditional claim (`UPDATE … SET acceptedAt=now() WHERE acceptedAt IS NULL AND
 expiresAt>now()`) plus the existing `UNIQUE(users.email)` constraint makes

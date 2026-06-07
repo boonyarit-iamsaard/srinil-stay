@@ -22,7 +22,7 @@ Staff session, but no Staff exists to create the first invitation
 out of scope). A future reader will see the server emailing an invitation on
 boot and rotating a token, and reasonably ask _"why on boot? why not a one-off
 script?"_ The answer is reachability: **the server is the only component
-guaranteed to hold the DB + SMTP credentials and to reach both** — so the
+guaranteed to hold the DB and SMTP credentials and to reach both** — so the
 bootstrap runs where the connectivity already exists, with no operator
 credentials on a laptop and no extra infrastructure.
 
