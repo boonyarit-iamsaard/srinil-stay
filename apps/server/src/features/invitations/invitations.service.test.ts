@@ -1,6 +1,7 @@
 import { db } from "@srinil-stay/drizzle";
 import { users } from "@srinil-stay/drizzle/schema/auth";
 import { invitations } from "@srinil-stay/drizzle/schema/invitations";
+import { DEFAULT_ROLE, STAFF_ROLE } from "@srinil-stay/drizzle/schema/roles";
 import { eq } from "drizzle-orm";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -143,6 +144,7 @@ describe("acceptInvitation", () => {
       .from(users)
       .where(eq(users.email, "accept@example.com"));
     expect(userRows).toHaveLength(1);
+    expect(userRows[0]?.role).toBe(STAFF_ROLE);
     const row = await tokenFor("accept@example.com");
     expect(row.acceptedAt).not.toBeNull();
   });
@@ -166,6 +168,21 @@ describe("acceptInvitation", () => {
       .from(users)
       .where(eq(users.email, "race@example.com"));
     expect(userRows).toHaveLength(1);
+    expect(userRows[0]?.role).toBe(STAFF_ROLE);
+  });
+
+  it("defaults direct user inserts to the guest role", async () => {
+    await db
+      .insert(users)
+      .values({ name: "Guest", email: "guest@example.com" });
+
+    const userRows = await db
+      .select()
+      .from(users)
+      .where(eq(users.email, "guest@example.com"));
+
+    expect(userRows).toHaveLength(1);
+    expect(userRows[0]?.role).toBe(DEFAULT_ROLE);
   });
 
   it("rejects an expired token without creating a user", async () => {
@@ -188,7 +205,7 @@ describe("acceptInvitation", () => {
 
   it("releases the claim when user creation fails (compensation)", async () => {
     // Seed an invitation whose email already belongs to a user, so the
-    // signUpEmail call hits the users.email unique constraint and throws.
+    // createUser call hits the existing users.email unique constraint and throws.
     await db
       .insert(users)
       .values({ name: "Clash", email: "clash@example.com" });

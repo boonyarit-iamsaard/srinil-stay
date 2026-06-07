@@ -4,11 +4,38 @@ This project uses **Ultracite**, a zero-config preset that enforces strict code 
 
 ## Quick Reference
 
-- **Format code**: `pnpm dlx ultracite fix`
-- **Check for issues**: `pnpm dlx ultracite check`
-- **Diagnose setup**: `pnpm dlx ultracite doctor`
+- **Format code**: `pnpm run fix`
+- **Check for issues**: `pnpm run check`
+- **Diagnose setup**: `pnpm exec ultracite doctor`
+- **Format Markdown**: `pnpm dlx prettier --write **/*.md`
+
+Use the local scripts instead of `pnpm dlx ultracite ...`; Ultracite is already
+installed in this workspace, and `dlx` may unnecessarily hit the npm registry.
+
+## Workspace Commands
+
+- **Run all type checks**: `pnpm exec turbo run types:check`
+- **Run server type check**: `pnpm exec turbo run types:check --filter=server`
+- **Run server tests**: `pnpm exec turbo run test --filter=server`
+- **Run all tests**: `pnpm exec turbo run test`
+
+Prefer Turborepo filters for package-scoped tasks. Avoid `pnpm --filter` unless
+you specifically need pnpm workspace package selection rather than Turborepo's
+task graph and cache behavior.
+
+Server tests use Testcontainers with Postgres 18. They require a working local
+container runtime; if Docker/Podman is unavailable, type checks and Ultracite
+can still run, but the server test suite will not start.
 
 Biome (the underlying engine) provides robust linting and formatting. Most issues are automatically fixable.
+
+When Markdown files are touched, run `pnpm dlx prettier --write **/*.md` before
+finishing.
+
+Commands that intentionally use `pnpm dlx` need npm registry/network access. In
+Codex's sandbox, registry resolution may fail with DNS errors; ask for
+permission to run those commands outside the sandbox instead of first trying the
+sandboxed command.
 
 ---
 
@@ -123,4 +150,4 @@ Biome's linter will catch most issues automatically. Focus your attention on:
 
 ---
 
-Most formatting and common issues are automatically fixed by Biome. Run `pnpm dlx ultracite fix` before committing to ensure compliance.
+Most formatting and common issues are automatically fixed by Biome. Run `pnpm run fix` before committing to ensure compliance.

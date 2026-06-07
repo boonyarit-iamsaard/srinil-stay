@@ -8,9 +8,17 @@ import {
   usersRelations,
   verifications,
 } from "@srinil-stay/drizzle/schema/auth";
+import {
+  DEFAULT_ROLE,
+  type Role,
+  STAFF_ROLE,
+} from "@srinil-stay/drizzle/schema/roles";
 import { env } from "@srinil-stay/env/server";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
+import type { Role as BetterAuthRole } from "better-auth/plugins";
+import { admin } from "better-auth/plugins";
+import { adminAc, userAc } from "better-auth/plugins/admin/access";
 
 const schema = {
   accounts,
@@ -47,7 +55,16 @@ export function createAuth() {
         httpOnly: true,
       },
     },
-    plugins: [],
+    plugins: [
+      admin({
+        defaultRole: DEFAULT_ROLE,
+        adminRoles: [STAFF_ROLE],
+        roles: {
+          guest: userAc,
+          staff: adminAc,
+        } satisfies Record<Role, BetterAuthRole>,
+      }),
+    ],
   });
 }
 

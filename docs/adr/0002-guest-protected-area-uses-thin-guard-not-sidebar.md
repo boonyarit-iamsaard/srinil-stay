@@ -67,6 +67,6 @@ recommended option that fits — and a faithful mirror of back-office's
 ## Out of scope
 
 The shared-cookie-domain / SSR-auth topology (which would later unlock
-`proxy.ts` optimistic redirects and server-rendered authenticated pages), the
-`role` (`guest | staff`) column from ADR 0001, and the concrete designs of the
+`proxy.ts` optimistic redirects and server-rendered authenticated pages),
+role-based route authorization policy, and the concrete designs of the
 `/account/*` and `/checkout` pages.

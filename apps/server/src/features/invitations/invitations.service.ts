@@ -4,6 +4,7 @@ import { auth } from "@srinil-stay/auth";
 import { db } from "@srinil-stay/drizzle";
 import { users } from "@srinil-stay/drizzle/schema/auth";
 import { invitations } from "@srinil-stay/drizzle/schema/invitations";
+import { STAFF_ROLE } from "@srinil-stay/drizzle/schema/roles";
 import { and, eq, gt, isNull } from "drizzle-orm";
 
 import { sendInvitationEmail } from "./invitations.email";
@@ -112,11 +113,12 @@ export async function acceptInvitation(input: {
   }
 
   try {
-    await auth.api.signUpEmail({
+    await auth.api.createUser({
       body: {
         email: claimed.email,
         name: claimed.name,
         password: input.password,
+        role: STAFF_ROLE,
       },
     });
   } catch (error) {
