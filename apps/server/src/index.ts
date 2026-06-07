@@ -5,6 +5,7 @@ import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { logger } from "hono/logger";
 
+import { bootstrapStaff } from "./features/invitations/invitations.bootstrap";
 import { invitationsRoutes } from "./features/invitations/invitations.routes";
 
 const app = new Hono();
@@ -25,6 +26,14 @@ app.on(["POST", "GET"], "/api/auth/*", (c) => auth.handler(c.req.raw));
 app.route("/invitations", invitationsRoutes);
 
 app.get("/", (c) => c.text("OK"));
+
+// Provision the declared first Staff member (opt-in, best-effort). Not awaited
+// so SMTP latency never blocks boot; bootstrapStaff swallows its own errors, so
+// this can never reject. See ADR 0004.
+bootstrapStaff({
+  email: env.BOOTSTRAP_STAFF_EMAIL,
+  name: env.BOOTSTRAP_STAFF_NAME,
+});
 
 serve(
   {

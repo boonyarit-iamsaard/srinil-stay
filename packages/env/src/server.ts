@@ -19,6 +19,10 @@ export const env = createEnv({
     SMTP_PORT: z.coerce.number().int().positive(),
     MAIL_FROM: z.string().min(1),
     BACK_OFFICE_URL: z.url(),
+    // First-Staff bootstrap (opt-in). When both are set, the server issues a
+    // Staff invitation for this person on startup. See ADR 0004.
+    BOOTSTRAP_STAFF_EMAIL: z.email().optional(),
+    BOOTSTRAP_STAFF_NAME: z.string().min(2).optional(),
   },
   runtimeEnv: process.env,
   emptyStringAsUndefined: true,

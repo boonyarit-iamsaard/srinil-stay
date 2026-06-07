@@ -39,9 +39,11 @@ server-side by the Hono API.
 
 ### Invitation
 
-A single-use, token-bearing email offer that lets a new person become Staff.
-Created by an existing Staff member and consumed once when the recipient
-accepts. The only way a Staff account comes into being (aside from the initial
-bootstrap, which is separate).
+A single-use, token-bearing email offer that lets a new person become Staff,
+consumed once when the recipient accepts and sets their own password. An
+Invitation is issued either by an existing Staff member (in the admin app), or
+— for a Staff member the system is configured to provision — by the system
+itself on startup. The latter, the **bootstrap** path, is how the first Staff
+comes into being before any Staff exists to invite them.
 
 _Avoid_: invite (as a noun), signup — Staff are invited, never self-registered.

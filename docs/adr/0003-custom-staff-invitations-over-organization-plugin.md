@@ -58,6 +58,7 @@ own glossary bans.
 
 ## Out of scope
 
-Bootstrap of the first Staff member, removal of the back-office self-signup form
-(gated on bootstrap completion), and invite-permission gating (who is allowed to
-invite).
+Invite-permission gating (which Staff may invite) remains open. Bootstrap of the
+first Staff member and removal of the back-office self-signup form are now
+decided in
+[ADR 0004](0004-bootstrap-first-staff-via-on-boot-invitation.md).

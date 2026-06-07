@@ -3,7 +3,6 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@srinil-stay/ui/components/card";
@@ -18,11 +17,7 @@ import { authClient } from "@/lib/auth-client";
 
 import Loader from "./loader";
 
-export default function SignInForm({
-  onSwitchToSignUp,
-}: {
-  onSwitchToSignUp: () => void;
-}) {
+export default function SignInForm() {
   const navigate = useNavigate({
     from: "/",
   });
@@ -141,11 +136,6 @@ export default function SignInForm({
           </form.Subscribe>
         </form>
       </CardContent>
-      <CardFooter className="justify-center">
-        <Button onClick={onSwitchToSignUp} variant="link">
-          Need an account? Sign Up
-        </Button>
-      </CardFooter>
     </Card>
   );
 }

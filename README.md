@@ -52,6 +52,24 @@ Then, run the development server:
 pnpm run dev
 ```
 
+## Bootstrapping the first Staff
+
+Back-office Staff are invite-only — there is no self-signup. To create the
+**first** Staff member (who can then invite the rest from the admin app), set
+both bootstrap vars in `apps/server/.env` and start the server:
+
+```bash
+BOOTSTRAP_STAFF_EMAIL=owner@example.com
+BOOTSTRAP_STAFF_NAME=Owner
+```
+
+On startup the server emails that person a Staff invitation; open the link and
+set a password to activate the account. It is a no-op once that email is a user,
+so the vars can be left in place. Note: while the invitation is pending, each
+restart rotates the token and invalidates the previously emailed link — open the
+most recent email. See
+[ADR 0004](docs/adr/0004-bootstrap-first-staff-via-on-boot-invitation.md).
+
 Local development ports:
 
 - Customer web app (Next.js): [http://localhost:3000](http://localhost:3000)
