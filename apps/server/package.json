@@ -18,14 +18,14 @@
     "dotenv": "catalog:",
     "drizzle-orm": "^0.45.1",
     "hono": "^4.8.2",
-    "nodemailer": "^6.9.16",
+    "nodemailer": "^8.0.5",
     "zod": "catalog:"
   },
   "devDependencies": {
     "@srinil-stay/config": "workspace:*",
     "@testcontainers/postgresql": "^12.0.1",
     "@types/node": "catalog:",
-    "@types/nodemailer": "^6.4.17",
+    "@types/nodemailer": "^8.0.1",
     "tsdown": "^0.21.9",
     "tsx": "^4.19.2",
     "typescript": "catalog:",

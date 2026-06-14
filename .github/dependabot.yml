@@ -1,0 +1,39 @@
+# Dependabot keeps dependencies current on a schedule — it complements the
+# (manually toggled) "Dependabot security updates" in repo Settings, which
+# opens fix PRs the moment an advisory lands. Version updates below catch
+# outdated deps that aren't yet flagged as vulnerable — e.g. surfacing the
+# esbuild/postcss bumps once upstream (drizzle-kit, Next.js, tsx) ship them.
+version: 2
+updates:
+  # pnpm workspace at the repo root; Dependabot reads pnpm-lock.yaml and the
+  # per-package manifests under apps/* and packages/*.
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 10
+    # Match the repo's Conventional Commits style, e.g. "chore(deps): bump …".
+    commit-message:
+      prefix: chore
+      include: scope
+    # One PR per group instead of one per package — keeps review noise low.
+    groups:
+      # Routine non-breaking bumps batched together.
+      minor-and-patch:
+        update-types:
+          - minor
+          - patch
+      # Majors land in their own PRs so breaking changes are reviewed alone.
+      major:
+        update-types:
+          - major
+
+  # Keep CI action versions current (no-op until a workflow exists, but ready
+  # for when an audit/test pipeline is added).
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: chore
+      include: scope
