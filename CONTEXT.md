@@ -15,11 +15,16 @@ homestay only.
 
 ### Unit
 
-A single bookable space within the homestay (a room, or a small house). There
-are ~10 of them. The thing a Guest reserves for a set of dates.
+A single bookable space within the homestay, such as a room or small house.
+There are ~10 of them. A Unit is defined by the reservation boundary: if spaces
+are only ever booked together, they are one Unit; if one physical structure can
+be booked separately, each reservable part is its own Unit. A Unit has
+attributes that describe it, including guest capacity and base price, but it
+does not belong to a parent Property. Units are removed from sale by
+deactivation, not hard deletion.
 
-> Term still being sharpened: whether the bookable thing is consistently called
-> a "Unit", "Room", or "House" is open — see open questions.
+_Avoid_: Room, House, Property — use these only as descriptive labels or
+attributes, not as the canonical bookable thing.
 
 ### Guest
 
