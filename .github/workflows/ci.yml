@@ -30,18 +30,9 @@ jobs:
 
       - name: Create development environment files
         run: |
-          cat > apps/server/.env <<'EOF'
-          DATABASE_URL=postgresql://postgres:password@localhost:5432/srinil-stay
-          BETTER_AUTH_SECRET=ci-only-dummy-secret-at-least-32-characters
-          BETTER_AUTH_URL=http://localhost:5000
-          CORS_ORIGIN=http://localhost:4000,http://localhost:3000
-          SMTP_HOST=localhost
-          SMTP_PORT=1025
-          MAIL_FROM=Srinil Stay <no-reply@srinilstay.local>
-          BACK_OFFICE_URL=http://localhost:4000
-          EOF
-          echo "NEXT_PUBLIC_SERVER_URL=http://localhost:5000" > apps/web/.env
-          echo "VITE_SERVER_URL=http://localhost:5000" > apps/back-office/.env
+          cp apps/server/.env.example apps/server/.env
+          cp apps/web/.env.example apps/web/.env
+          cp apps/back-office/.env.example apps/back-office/.env
 
       - name: Type check
         run: pnpm types:check

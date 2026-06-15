@@ -4,15 +4,12 @@ services:
       context: .
       dockerfile: apps/server/Dockerfile
     container_name: srinil-stay-server
-    # Single source of values is the local dev env file; override only what must
-    # differ for the prod image inside the compose network: NODE_ENV, and the
-    # hosts that are reached by service name rather than localhost.
+    # Copy apps/server/.env.production.example to
+    # apps/server/.env.production.local before running `make up`.
     env_file:
-      - apps/server/.env
+      - apps/server/.env.production.local
     environment:
       NODE_ENV: production
-      DATABASE_URL: postgresql://postgres:password@postgres:5432/srinil-stay
-      SMTP_HOST: mailpit
     ports:
       - "5000:5000"
     networks:

@@ -83,6 +83,12 @@ PostgreSQL only. `compose.override.yaml` is reserved for verifying the deployed
 stack shape locally; it currently builds and runs the production server image
 against the Compose PostgreSQL service.
 
+Create the production-like server env file before starting the stack:
+
+```bash
+cp apps/server/.env.production.example apps/server/.env.production.local
+```
+
 ```bash
 make up
 ```
@@ -125,6 +131,15 @@ If you want to add app-specific blocks instead of shared primitives, run the sha
 ## Git Hooks and Formatting
 
 - Format and lint fix: `pnpm run check`
+
+## Local CI with act
+
+This repo includes `.actrc` for running GitHub Actions locally with
+Testcontainers:
+
+```bash
+act pull_request -j verify
+```
 
 ## Project Structure
 
