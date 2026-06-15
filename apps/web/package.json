@@ -15,7 +15,7 @@
     "@tanstack/react-form": "^1.28.0",
     "better-auth": "catalog:",
     "lucide-react": "^1.8.0",
-    "next": "16.2.7",
+    "next": "16.2.9",
     "next-themes": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",

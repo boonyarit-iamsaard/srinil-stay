@@ -37,10 +37,10 @@
     "@srinil-stay/config": "workspace:*",
     "@types/node": "catalog:",
     "husky": "^9.1.7",
-    "lint-staged": "^16.2.7",
-    "turbo": "^2.8.12",
+    "lint-staged": "^17.0.7",
+    "turbo": "^2.9.18",
     "typescript": "catalog:",
-    "ultracite": "7.8.1"
+    "ultracite": "7.8.3"
   },
   "packageManager": "pnpm@11.5.1",
   "engines": {
