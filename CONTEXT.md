@@ -25,12 +25,15 @@ are ~10 of them. The thing a Guest reserves for a set of dates.
 
 A customer who discovers the homestay (typically via Google/social), browses
 unit availability, and books a stay. The audience of the **customer-facing
-web app**.
+web app**. Guests may self-register or sign in through Guest-facing
+authentication flows.
 
 ### Staff
 
 An internal operator who manages units, availability, and bookings. The audience
-of the **admin app**. Few in number.
+of the **admin app**. Few in number. Only Staff may use Staff-only operations;
+being an authenticated Guest is not enough. Staff are invited, never
+self-registered.
 
 ### Booking
 

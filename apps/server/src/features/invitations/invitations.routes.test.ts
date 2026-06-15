@@ -1,7 +1,7 @@
 import { auth } from "@srinil-stay/auth";
 import { db } from "@srinil-stay/drizzle";
 import { invitations } from "@srinil-stay/drizzle/schema/invitations";
-import { STAFF_ROLE } from "@srinil-stay/drizzle/schema/roles";
+import { DEFAULT_ROLE, STAFF_ROLE } from "@srinil-stay/drizzle/schema/roles";
 import { eq } from "drizzle-orm";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { invitationsRoutes } from "./invitations.routes";
@@ -39,6 +39,22 @@ const AUTHENTICATED_SESSION: NonNullable<SessionResult> = {
   },
 };
 
+const GUEST_SESSION: NonNullable<SessionResult> = {
+  user: {
+    ...AUTHENTICATED_SESSION.user,
+    id: "guest-user-id",
+    email: "guest@example.com",
+    name: "Guest User",
+    role: DEFAULT_ROLE,
+  },
+  session: {
+    ...AUTHENTICATED_SESSION.session,
+    id: "guest-session-id",
+    userId: "guest-user-id",
+    token: "guest-session-token",
+  },
+};
+
 function stubSession(value: SessionResult) {
   vi.spyOn(auth.api, "getSession").mockResolvedValue(value);
 }
@@ -69,7 +85,13 @@ describe("POST /invitations", () => {
     expect(res.status).toBe(401);
   });
 
-  it("creates an invitation for an authenticated caller", async () => {
+  it("returns 403 for a non-Staff session", async () => {
+    stubSession(GUEST_SESSION);
+    const res = await postJson("/", { email: "x@example.com", name: "X Y" });
+    expect(res.status).toBe(403);
+  });
+
+  it("creates an invitation for an authenticated Staff caller", async () => {
     stubSession(AUTHENTICATED_SESSION);
     const res = await postJson("/", {
       email: "invited@example.com",
