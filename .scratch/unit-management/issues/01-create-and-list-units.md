@@ -11,15 +11,15 @@ do not introduce Room, House, or Property as separate domain models.
 
 ## Acceptance criteria
 
-- [ ] Staff can create a Unit with name, short description, guest capacity, base
+- [x] Staff can create a Unit with name, short description, guest capacity, base
       price in integer minor units, explicit currency, and an active default.
-- [ ] Unit money values follow ADR 0006: integer minor units with explicit
+- [x] Unit money values follow ADR 0006: integer minor units with explicit
       currency, initially constrained to `THB`.
-- [ ] Staff can view a list of Units in the back-office app after creation.
-- [ ] Unit create/list API access is Staff-only.
-- [ ] The slice includes focused server tests for create/list behavior and
+- [x] Staff can view a list of Units in the back-office app after creation.
+- [x] Unit create/list API access is Staff-only.
+- [x] The slice includes focused server tests for create/list behavior and
       Staff-only access.
-- [ ] Photos, Unit kind/label, availability, and Bookings remain out of scope.
+- [x] Photos, Unit kind/label, availability, and Bookings remain out of scope.
 
 ## Blocked by
 

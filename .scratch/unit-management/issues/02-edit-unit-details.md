@@ -11,15 +11,15 @@ exist.
 
 ## Acceptance criteria
 
-- [ ] Staff can open an existing Unit and update its name, short description,
+- [x] Staff can open an existing Unit and update its name, short description,
       guest capacity, base price amount, and currency.
-- [ ] Unit money values continue to follow ADR 0006: integer minor units with
+- [x] Unit money values continue to follow ADR 0006: integer minor units with
       explicit currency, initially constrained to `THB`.
-- [ ] Updated Unit details are visible in the back-office Unit list after save.
-- [ ] Unit edit API access is Staff-only.
-- [ ] The slice includes focused server tests for edit behavior and Staff-only
+- [x] Updated Unit details are visible in the back-office Unit list after save.
+- [x] Unit edit API access is Staff-only.
+- [x] The slice includes focused server tests for edit behavior and Staff-only
       access.
-- [ ] Photos, Unit kind/label, availability, and Bookings remain out of scope.
+- [x] Photos, Unit kind/label, availability, and Bookings remain out of scope.
 
 ## Blocked by
 

@@ -11,17 +11,17 @@ requiring frontend code to import database schema modules.
 
 ## Acceptance criteria
 
-- [ ] Guest and Staff role names are defined once in a shared non-database
+- [x] Guest and Staff role names are defined once in a shared non-database
       contract.
-- [ ] The Better Auth configuration still defaults new users to Guest and treats
+- [x] The Better Auth configuration still defaults new users to Guest and treats
       Staff as the admin role.
-- [ ] Staff-only Hono routes still reject unauthenticated callers and
+- [x] Staff-only Hono routes still reject unauthenticated callers and
       authenticated Guests.
-- [ ] The back-office protected route guard no longer copies the `"staff"`
+- [x] The back-office protected route guard no longer copies the `"staff"`
       literal inline.
-- [ ] The Guest app remains a thin Guest-facing client and does not gain Staff
+- [x] The Guest app remains a thin Guest-facing client and does not gain Staff
       shell or Staff-only route behaviour.
-- [ ] Existing role-related tests continue to pass or are updated to assert the
+- [x] Existing role-related tests continue to pass or are updated to assert the
       shared role contract.
 
 ## Blocked by

@@ -11,16 +11,16 @@ existing Staff Unit price path without changing Staff-visible behaviour.
 
 ## Acceptance criteria
 
-- [ ] Money represents an amount in integer minor units with an explicit
+- [x] Money represents an amount in integer minor units with an explicit
       currency.
-- [ ] Money accepts only supported Srinil Stay currencies, initially `THB`.
-- [ ] Money rejects fractional minor-unit values and non-positive Unit base
+- [x] Money accepts only supported Srinil Stay currencies, initially `THB`.
+- [x] Money rejects fractional minor-unit values and non-positive Unit base
       prices where the current Unit flow rejects them today.
-- [ ] The Staff Unit create/edit flow still displays and submits base prices in
+- [x] The Staff Unit create/edit flow still displays and submits base prices in
       whole baht while persisting integer minor units.
-- [ ] Focused tests cover Money parsing, validation, and display conversion edge
+- [x] Focused tests cover Money parsing, validation, and display conversion edge
       cases.
-- [ ] Booking, payment-provider integration, discounts, and multi-currency
+- [x] Booking, payment-provider integration, discounts, and multi-currency
       expansion remain out of scope.
 
 ## Blocked by
