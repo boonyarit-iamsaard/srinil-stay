@@ -50,3 +50,13 @@ export async function updateUnit(id: string, input: UpdateUnitInput) {
 
   return unit;
 }
+
+export async function updateUnitActiveState(id: string, active: boolean) {
+  const [unit] = await db
+    .update(units)
+    .set({ active })
+    .where(eq(units.id, id))
+    .returning();
+
+  return unit;
+}

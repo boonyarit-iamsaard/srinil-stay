@@ -10,7 +10,15 @@ import {
 import { Input } from "@srinil-stay/ui/components/input";
 import { Label } from "@srinil-stay/ui/components/label";
 import { useForm } from "@tanstack/react-form";
-import { Pencil, Plus, RefreshCw, Save, X } from "lucide-react";
+import {
+  Pencil,
+  Plus,
+  Power,
+  RefreshCw,
+  RotateCcw,
+  Save,
+  X,
+} from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import z from "zod";
@@ -93,10 +101,23 @@ function getSubmitLabel(isSubmitting: boolean, isEditing: boolean) {
   return isEditing ? "Save Unit" : "Create Unit";
 }
 
+function getUnitRowClassName(unit: Unit) {
+  return unit.active
+    ? "border-b last:border-0"
+    : "border-b bg-muted/20 text-muted-foreground last:border-0";
+}
+
+function getActiveStateActionLabel(unit: Unit) {
+  return unit.active ? "Deactivate" : "Reactivate";
+}
+
 export function UnitManagement() {
   const [units, setUnits] = useState<Unit[]>([]);
   const [isLoadingUnits, setIsLoadingUnits] = useState(true);
   const [editingUnit, setEditingUnit] = useState<Unit | null>(null);
+  const [updatingActiveUnitId, setUpdatingActiveUnitId] = useState<
+    string | null
+  >(null);
 
   const loadUnits = useCallback(async () => {
     setIsLoadingUnits(true);
@@ -176,6 +197,34 @@ export function UnitManagement() {
   const cancelEditing = () => {
     setEditingUnit(null);
     form.reset(EMPTY_UNIT_FORM_VALUES);
+  };
+
+  const updateActiveState = async (unit: Unit) => {
+    setUpdatingActiveUnitId(unit.id);
+    const nextActiveState = !unit.active;
+    const response = await fetch(
+      `${env.VITE_SERVER_URL}/units/${unit.id}/active`,
+      {
+        method: "PATCH",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ active: nextActiveState }),
+      }
+    );
+
+    setUpdatingActiveUnitId(null);
+    if (!response.ok) {
+      toast.error(
+        (await parseErrorResponse(response)) ??
+          `Could not ${unit.active ? "deactivate" : "reactivate"} unit`
+      );
+      return;
+    }
+
+    toast.success(
+      `${unit.name} ${nextActiveState ? "reactivated" : "deactivated"}`
+    );
+    await loadUnits();
   };
 
   return (
@@ -371,7 +420,7 @@ export function UnitManagement() {
             </thead>
             <tbody>
               {units.map((unit) => (
-                <tr className="border-b last:border-0" key={unit.id}>
+                <tr className={getUnitRowClassName(unit)} key={unit.id}>
                   <td className="px-4 py-3">
                     <div className="font-medium">{unit.name}</div>
                     <div className="text-muted-foreground text-xs">
@@ -391,16 +440,29 @@ export function UnitManagement() {
                       {unit.active ? "Active" : "Inactive"}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-right">
-                    <Button
-                      aria-label={`Edit ${unit.name}`}
-                      onClick={() => startEditing(unit)}
-                      size="icon-sm"
-                      type="button"
-                      variant="ghost"
-                    >
-                      <Pencil />
-                    </Button>
+                  <td className="px-4 py-3">
+                    <div className="flex justify-end gap-1">
+                      <Button
+                        aria-label={`Edit ${unit.name}`}
+                        onClick={() => startEditing(unit)}
+                        size="icon-sm"
+                        type="button"
+                        variant="ghost"
+                      >
+                        <Pencil />
+                      </Button>
+                      <Button
+                        aria-label={`${getActiveStateActionLabel(unit)} ${unit.name}`}
+                        disabled={updatingActiveUnitId === unit.id}
+                        onClick={() => updateActiveState(unit)}
+                        size="sm"
+                        type="button"
+                        variant={unit.active ? "destructive" : "outline"}
+                      >
+                        {unit.active ? <Power /> : <RotateCcw />}
+                        {getActiveStateActionLabel(unit)}
+                      </Button>
+                    </div>
                   </td>
                 </tr>
               ))}

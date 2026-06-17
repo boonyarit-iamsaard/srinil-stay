@@ -3,7 +3,12 @@ import { Hono } from "hono";
 import { z } from "zod";
 
 import { requireStaff } from "../../lib/require-staff";
-import { createUnit, listUnits, updateUnit } from "./units.service";
+import {
+  createUnit,
+  listUnits,
+  updateUnit,
+  updateUnitActiveState,
+} from "./units.service";
 
 const unitDetailsSchema = z.object({
   name: z.string().min(1),
@@ -11,6 +16,10 @@ const unitDetailsSchema = z.object({
   guestCapacity: z.int().positive(),
   basePriceMinor: z.int().positive(),
   currency: unitCurrencySchema,
+});
+
+const activeStateSchema = z.object({
+  active: z.boolean(),
 });
 
 async function parseJsonBody(request: { json: () => Promise<unknown> }) {
@@ -45,6 +54,23 @@ unitsRoutes.patch("/:id", async (c) => {
   }
 
   const unit = await updateUnit(c.req.param("id"), parsed.data);
+  if (!unit) {
+    return c.json({ error: "Unit not found" }, 404);
+  }
+
+  return c.json(unit);
+});
+
+unitsRoutes.patch("/:id/active", async (c) => {
+  const parsed = activeStateSchema.safeParse(await parseJsonBody(c.req));
+  if (!parsed.success) {
+    return c.json({ error: "Invalid input" }, 400);
+  }
+
+  const unit = await updateUnitActiveState(
+    c.req.param("id"),
+    parsed.data.active
+  );
   if (!unit) {
     return c.json({ error: "Unit not found" }, 404);
   }

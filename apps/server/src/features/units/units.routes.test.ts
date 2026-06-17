@@ -278,16 +278,78 @@ describe("PATCH /units/:id", () => {
   });
 });
 
+describe("PATCH /units/:id/active", () => {
+  it("deactivates an active Unit without removing it from the Unit list", async () => {
+    stubSession(AUTHENTICATED_SESSION);
+    const unitId = await readUnitId(
+      await postJson("/", {
+        name: "Garden Bungalow",
+        shortDescription: "Quiet standalone unit near the garden.",
+        guestCapacity: 2,
+        basePriceMinor: 180_000,
+        currency: "THB",
+      })
+    );
+
+    const res = await patchJson(`/${unitId}/active`, { active: false });
+
+    expect(res.status).toBe(200);
+    expect(await res.json()).toMatchObject({
+      id: unitId,
+      active: false,
+    });
+
+    const listRes = await get("/");
+
+    expect(await listRes.json()).toMatchObject({
+      units: [
+        {
+          id: unitId,
+          active: false,
+        },
+      ],
+    });
+  });
+
+  it("reactivates an inactive Unit", async () => {
+    stubSession(AUTHENTICATED_SESSION);
+    const unitId = await readUnitId(
+      await postJson("/", {
+        name: "Garden Bungalow",
+        shortDescription: "Quiet standalone unit near the garden.",
+        guestCapacity: 2,
+        basePriceMinor: 180_000,
+        currency: "THB",
+      })
+    );
+    await patchJson(`/${unitId}/active`, { active: false });
+
+    const res = await patchJson(`/${unitId}/active`, { active: true });
+
+    expect(res.status).toBe(200);
+    expect(await res.json()).toMatchObject({
+      id: unitId,
+      active: true,
+    });
+  });
+});
+
 describe("Unit API access", () => {
   it("rejects callers who are not authenticated Staff", async () => {
     stubSession(null);
     expect((await postJson("/", {})).status).toBe(401);
     expect((await get("/")).status).toBe(401);
     expect((await patchJson("/unit-id", {})).status).toBe(401);
+    expect((await patchJson("/unit-id/active", { active: false })).status).toBe(
+      401
+    );
 
     stubSession(GUEST_SESSION);
     expect((await postJson("/", {})).status).toBe(403);
     expect((await get("/")).status).toBe(403);
     expect((await patchJson("/unit-id", {})).status).toBe(403);
+    expect((await patchJson("/unit-id/active", { active: false })).status).toBe(
+      403
+    );
   });
 });
