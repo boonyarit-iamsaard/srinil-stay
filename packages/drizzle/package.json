@@ -13,9 +13,11 @@
     "db:push": "drizzle-kit push",
     "db:generate": "drizzle-kit generate",
     "db:studio": "drizzle-kit studio",
-    "db:migrate": "drizzle-kit migrate"
+    "db:migrate": "drizzle-kit migrate",
+    "types:check": "tsc --noEmit"
   },
   "dependencies": {
+    "@srinil-stay/domain": "workspace:*",
     "@srinil-stay/env": "workspace:*",
     "dotenv": "catalog:",
     "drizzle-orm": "^0.45.1",

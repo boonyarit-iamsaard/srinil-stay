@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
+    "@srinil-stay/domain": "workspace:*",
     "@srinil-stay/env": "workspace:*",
     "@srinil-stay/ui": "workspace:*",
     "@tailwindcss/vite": "^4.2.2",

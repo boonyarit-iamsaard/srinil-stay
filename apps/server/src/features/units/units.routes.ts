@@ -1,4 +1,7 @@
-import { unitCurrencySchema } from "@srinil-stay/drizzle/schema/units";
+import {
+  createPositiveMoney,
+  SUPPORTED_CURRENCIES,
+} from "@srinil-stay/domain/money";
 import { Hono } from "hono";
 import { z } from "zod";
 
@@ -10,13 +13,28 @@ import {
   updateUnitActiveState,
 } from "./units.service";
 
-const unitDetailsSchema = z.object({
-  name: z.string().min(1),
-  shortDescription: z.string().min(1),
-  guestCapacity: z.int().positive(),
-  basePriceMinor: z.int().positive(),
-  currency: unitCurrencySchema,
-});
+const unitDetailsSchema = z
+  .object({
+    name: z.string().min(1),
+    shortDescription: z.string().min(1),
+    guestCapacity: z.int().positive(),
+    basePriceMinor: z.number(),
+    currency: z.enum(SUPPORTED_CURRENCIES),
+  })
+  .superRefine((input, context) => {
+    try {
+      createPositiveMoney({
+        amountMinor: input.basePriceMinor,
+        currency: input.currency,
+      });
+    } catch {
+      context.addIssue({
+        code: "custom",
+        path: ["basePriceMinor"],
+        message: "Invalid money",
+      });
+    }
+  });
 
 const activeStateSchema = z.object({
   active: z.boolean(),

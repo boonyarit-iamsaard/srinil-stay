@@ -1,3 +1,4 @@
+import type { Currency } from "@srinil-stay/domain/money";
 import { sql } from "drizzle-orm";
 import {
   boolean,
@@ -7,13 +8,6 @@ import {
   timestamp,
   uuid,
 } from "drizzle-orm/pg-core";
-import { z } from "zod";
-
-export const UNIT_CURRENCIES = ["THB"] as const;
-
-export type UnitCurrency = (typeof UNIT_CURRENCIES)[number];
-
-export const unitCurrencySchema = z.enum(UNIT_CURRENCIES);
 
 export const units = pgTable("units", {
   id: uuid("id").default(sql`uuidv7()`).primaryKey(),
@@ -21,7 +15,7 @@ export const units = pgTable("units", {
   shortDescription: text("short_description").notNull(),
   guestCapacity: integer("guest_capacity").notNull(),
   basePriceMinor: integer("base_price_minor").notNull(),
-  currency: text("currency").$type<UnitCurrency>().notNull(),
+  currency: text("currency").$type<Currency>().notNull(),
   active: boolean("active").default(true).notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at")

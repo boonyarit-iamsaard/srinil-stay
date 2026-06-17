@@ -1,10 +1,11 @@
+import type { Currency } from "@srinil-stay/domain/money";
 import { db } from "@srinil-stay/drizzle";
-import { type UnitCurrency, units } from "@srinil-stay/drizzle/schema/units";
+import { units } from "@srinil-stay/drizzle/schema/units";
 import { asc, eq } from "drizzle-orm";
 
 export interface CreateUnitInput {
   basePriceMinor: number;
-  currency: UnitCurrency;
+  currency: Currency;
   guestCapacity: number;
   name: string;
   shortDescription: string;

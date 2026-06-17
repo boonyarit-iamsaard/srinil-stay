@@ -1,3 +1,10 @@
+import {
+  type Currency,
+  createMoney,
+  formatMoney as formatMoneyValue,
+  moneyFromMajorUnit,
+  moneyToMajorUnit,
+} from "@srinil-stay/domain/money";
 import { env } from "@srinil-stay/env/back-office";
 import { Button } from "@srinil-stay/ui/components/button";
 import {
@@ -23,12 +30,10 @@ import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import z from "zod";
 
-const MINOR_UNITS_PER_BAHT = 100;
-
 interface Unit {
   active: boolean;
   basePriceMinor: number;
-  currency: "THB";
+  currency: Currency;
   guestCapacity: number;
   id: string;
   name: string;
@@ -37,7 +42,7 @@ interface Unit {
 
 interface UnitFormValues {
   basePrice: number;
-  currency: "THB";
+  currency: Currency;
   guestCapacity: number;
   name: string;
   shortDescription: string;
@@ -70,10 +75,12 @@ const errorResponseSchema = z.object({
 });
 
 function formatMoney(unit: Unit) {
-  return new Intl.NumberFormat("th-TH", {
-    style: "currency",
-    currency: unit.currency,
-  }).format(unit.basePriceMinor / MINOR_UNITS_PER_BAHT);
+  return formatMoneyValue(
+    createMoney({
+      amountMinor: unit.basePriceMinor,
+      currency: unit.currency,
+    })
+  );
 }
 
 async function parseErrorResponse(response: Response) {
@@ -88,7 +95,12 @@ function unitToFormValues(unit: Unit): UnitFormValues {
     name: unit.name,
     shortDescription: unit.shortDescription,
     guestCapacity: unit.guestCapacity,
-    basePrice: unit.basePriceMinor / MINOR_UNITS_PER_BAHT,
+    basePrice: moneyToMajorUnit(
+      createMoney({
+        amountMinor: unit.basePriceMinor,
+        currency: unit.currency,
+      })
+    ),
     currency: unit.currency,
   };
 }
@@ -160,7 +172,10 @@ export function UnitManagement() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             ...rest,
-            basePriceMinor: basePrice * MINOR_UNITS_PER_BAHT,
+            basePriceMinor: moneyFromMajorUnit({
+              amount: basePrice,
+              currency: rest.currency,
+            }).amountMinor,
           }),
         }
       );
