@@ -1,10 +1,10 @@
 import { randomBytes } from "node:crypto";
 
 import { auth } from "@srinil-stay/auth";
+import { STAFF_ROLE } from "@srinil-stay/domain/role";
 import { db } from "@srinil-stay/drizzle";
 import { users } from "@srinil-stay/drizzle/schema/auth";
 import { invitations } from "@srinil-stay/drizzle/schema/invitations";
-import { STAFF_ROLE } from "@srinil-stay/drizzle/schema/roles";
 import { and, eq, gt, isNull } from "drizzle-orm";
 
 import { sendInvitationEmail } from "./invitations.email";

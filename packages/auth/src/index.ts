@@ -1,3 +1,5 @@
+import type { Role } from "@srinil-stay/domain/role";
+import { DEFAULT_ROLE, STAFF_ROLE } from "@srinil-stay/domain/role";
 import { createDb } from "@srinil-stay/drizzle";
 import {
   accounts,
@@ -8,11 +10,6 @@ import {
   usersRelations,
   verifications,
 } from "@srinil-stay/drizzle/schema/auth";
-import {
-  DEFAULT_ROLE,
-  type Role,
-  STAFF_ROLE,
-} from "@srinil-stay/drizzle/schema/roles";
 import { env } from "@srinil-stay/env/server";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";

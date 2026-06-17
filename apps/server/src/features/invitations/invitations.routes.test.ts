@@ -1,7 +1,7 @@
 import { auth } from "@srinil-stay/auth";
+import { DEFAULT_ROLE, STAFF_ROLE } from "@srinil-stay/domain/role";
 import { db } from "@srinil-stay/drizzle";
 import { invitations } from "@srinil-stay/drizzle/schema/invitations";
-import { DEFAULT_ROLE, STAFF_ROLE } from "@srinil-stay/drizzle/schema/roles";
 import { eq } from "drizzle-orm";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { invitationsRoutes } from "./invitations.routes";

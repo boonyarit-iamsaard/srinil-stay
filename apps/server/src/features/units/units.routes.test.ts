@@ -1,5 +1,5 @@
 import { auth } from "@srinil-stay/auth";
-import { DEFAULT_ROLE, STAFF_ROLE } from "@srinil-stay/drizzle/schema/roles";
+import { DEFAULT_ROLE, STAFF_ROLE } from "@srinil-stay/domain/role";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { unitsRoutes } from "./units.routes";
 

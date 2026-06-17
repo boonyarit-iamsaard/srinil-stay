@@ -279,6 +279,9 @@ importers:
 
   packages/auth:
     dependencies:
+      '@srinil-stay/domain':
+        specifier: workspace:*
+        version: link:../domain
       '@srinil-stay/drizzle':
         specifier: workspace:*
         version: link:../drizzle

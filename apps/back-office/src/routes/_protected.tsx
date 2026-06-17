@@ -1,3 +1,4 @@
+import { isStaff } from "@srinil-stay/domain/role";
 import { Button } from "@srinil-stay/ui/components/button";
 import { Separator } from "@srinil-stay/ui/components/separator";
 import {
@@ -12,7 +13,6 @@ import {
   useNavigate,
   useRouterState,
 } from "@tanstack/react-router";
-import { z } from "zod";
 
 import { AppSidebar } from "@/components/app-sidebar";
 import { ModeToggle } from "@/components/mode-toggle";
@@ -23,13 +23,6 @@ const TITLES: Record<string, string> = {
   "/invitations/create": "Invitations",
   "/units": "Units",
 };
-// TODO: Move role literals to a shared non-database package; do not import
-// @srinil-stay/drizzle/schema/roles into frontend code.
-const STAFF_ROLE = "staff";
-const staffUserSchema = z.object({
-  role: z.literal(STAFF_ROLE),
-});
-
 export const Route = createFileRoute("/_protected")({
   component: ProtectedLayout,
   beforeLoad: async () => {
@@ -42,9 +35,7 @@ export const Route = createFileRoute("/_protected")({
     }
     return {
       session,
-      access: staffUserSchema.safeParse(sessionData.user).success
-        ? "allowed"
-        : "forbidden",
+      access: isStaff(sessionData.user.role) ? "allowed" : "forbidden",
     };
   },
 });

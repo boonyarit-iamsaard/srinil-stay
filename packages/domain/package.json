@@ -5,6 +5,7 @@
   "type": "module",
   "exports": {
     "./money": "./src/money.ts",
+    "./role": "./src/role.ts",
     "./unit": "./src/unit.ts"
   },
   "scripts": {

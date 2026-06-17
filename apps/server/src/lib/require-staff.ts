@@ -1,5 +1,5 @@
 import { auth } from "@srinil-stay/auth";
-import { STAFF_ROLE } from "@srinil-stay/drizzle/schema/roles";
+import { isStaff } from "@srinil-stay/domain/role";
 import { createMiddleware } from "hono/factory";
 
 export const requireStaff = createMiddleware(async (c, next) => {
@@ -7,7 +7,7 @@ export const requireStaff = createMiddleware(async (c, next) => {
   if (!session) {
     return c.json({ error: "Unauthorized" }, 401);
   }
-  if (session.user.role !== STAFF_ROLE) {
+  if (!isStaff(session.user.role)) {
     return c.json({ error: "Forbidden" }, 403);
   }
 

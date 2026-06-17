@@ -1,3 +1,5 @@
+import type { Role } from "@srinil-stay/domain/role";
+import { DEFAULT_ROLE } from "@srinil-stay/domain/role";
 import { relations, sql } from "drizzle-orm";
 import {
   boolean,
@@ -7,8 +9,6 @@ import {
   timestamp,
   uuid,
 } from "drizzle-orm/pg-core";
-
-import { DEFAULT_ROLE, type Role } from "./roles";
 
 export const users = pgTable("users", {
   id: uuid("id").default(sql`uuidv7()`).primaryKey(),
