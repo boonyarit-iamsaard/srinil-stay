@@ -7,6 +7,7 @@ import { logger } from "hono/logger";
 
 import { bootstrapStaff } from "./features/invitations/invitations.bootstrap";
 import { invitationsRoutes } from "./features/invitations/invitations.routes";
+import { unitsRoutes } from "./features/units/units.routes";
 
 const app = new Hono();
 
@@ -24,6 +25,7 @@ app.use(
 app.on(["POST", "GET"], "/api/auth/*", (c) => auth.handler(c.req.raw));
 
 app.route("/invitations", invitationsRoutes);
+app.route("/units", unitsRoutes);
 
 app.get("/", (c) => c.text("OK"));
 

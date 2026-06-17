@@ -21,6 +21,7 @@ import { authClient } from "@/lib/auth-client";
 const TITLES: Record<string, string> = {
   "/dashboard": "Dashboard",
   "/invitations/create": "Invitations",
+  "/units": "Units",
 };
 // TODO: Move role literals to a shared non-database package; do not import
 // @srinil-stay/drizzle/schema/roles into frontend code.

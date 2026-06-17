@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as ProtectedRouteImport } from './routes/_protected'
 import { Route as AuthRouteImport } from './routes/_auth'
 import { Route as ProtectedIndexRouteImport } from './routes/_protected/index'
+import { Route as ProtectedUnitsRouteImport } from './routes/_protected/units'
 import { Route as ProtectedDashboardRouteImport } from './routes/_protected/dashboard'
 import { Route as AuthLoginRouteImport } from './routes/_auth/login'
 import { Route as ProtectedInvitationsCreateRouteImport } from './routes/_protected/invitations/create'
@@ -28,6 +29,11 @@ const AuthRoute = AuthRouteImport.update({
 const ProtectedIndexRoute = ProtectedIndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => ProtectedRoute,
+} as any)
+const ProtectedUnitsRoute = ProtectedUnitsRouteImport.update({
+  id: '/units',
+  path: '/units',
   getParentRoute: () => ProtectedRoute,
 } as any)
 const ProtectedDashboardRoute = ProtectedDashboardRouteImport.update({
@@ -56,6 +62,7 @@ export interface FileRoutesByFullPath {
   '/': typeof ProtectedIndexRoute
   '/login': typeof AuthLoginRoute
   '/dashboard': typeof ProtectedDashboardRoute
+  '/units': typeof ProtectedUnitsRoute
   '/invitations/accept': typeof AuthInvitationsAcceptRoute
   '/invitations/create': typeof ProtectedInvitationsCreateRoute
 }
@@ -63,6 +70,7 @@ export interface FileRoutesByTo {
   '/': typeof ProtectedIndexRoute
   '/login': typeof AuthLoginRoute
   '/dashboard': typeof ProtectedDashboardRoute
+  '/units': typeof ProtectedUnitsRoute
   '/invitations/accept': typeof AuthInvitationsAcceptRoute
   '/invitations/create': typeof ProtectedInvitationsCreateRoute
 }
@@ -72,6 +80,7 @@ export interface FileRoutesById {
   '/_protected': typeof ProtectedRouteWithChildren
   '/_auth/login': typeof AuthLoginRoute
   '/_protected/dashboard': typeof ProtectedDashboardRoute
+  '/_protected/units': typeof ProtectedUnitsRoute
   '/_protected/': typeof ProtectedIndexRoute
   '/_auth/invitations/accept': typeof AuthInvitationsAcceptRoute
   '/_protected/invitations/create': typeof ProtectedInvitationsCreateRoute
@@ -82,6 +91,7 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/dashboard'
+    | '/units'
     | '/invitations/accept'
     | '/invitations/create'
   fileRoutesByTo: FileRoutesByTo
@@ -89,6 +99,7 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/dashboard'
+    | '/units'
     | '/invitations/accept'
     | '/invitations/create'
   id:
@@ -97,6 +108,7 @@ export interface FileRouteTypes {
     | '/_protected'
     | '/_auth/login'
     | '/_protected/dashboard'
+    | '/_protected/units'
     | '/_protected/'
     | '/_auth/invitations/accept'
     | '/_protected/invitations/create'
@@ -128,6 +140,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof ProtectedIndexRouteImport
+      parentRoute: typeof ProtectedRoute
+    }
+    '/_protected/units': {
+      id: '/_protected/units'
+      path: '/units'
+      fullPath: '/units'
+      preLoaderRoute: typeof ProtectedUnitsRouteImport
       parentRoute: typeof ProtectedRoute
     }
     '/_protected/dashboard': {
@@ -175,12 +194,14 @@ const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
 
 interface ProtectedRouteChildren {
   ProtectedDashboardRoute: typeof ProtectedDashboardRoute
+  ProtectedUnitsRoute: typeof ProtectedUnitsRoute
   ProtectedIndexRoute: typeof ProtectedIndexRoute
   ProtectedInvitationsCreateRoute: typeof ProtectedInvitationsCreateRoute
 }
 
 const ProtectedRouteChildren: ProtectedRouteChildren = {
   ProtectedDashboardRoute: ProtectedDashboardRoute,
+  ProtectedUnitsRoute: ProtectedUnitsRoute,
   ProtectedIndexRoute: ProtectedIndexRoute,
   ProtectedInvitationsCreateRoute: ProtectedInvitationsCreateRoute,
 }

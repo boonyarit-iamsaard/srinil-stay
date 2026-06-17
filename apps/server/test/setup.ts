@@ -6,6 +6,6 @@ import { beforeEach } from "vitest";
 // and the invitations table in one statement.
 beforeEach(async () => {
   await db.execute(
-    sql`TRUNCATE invitations, sessions, accounts, verifications, users RESTART IDENTITY CASCADE`
+    sql`TRUNCATE units, invitations, sessions, accounts, verifications, users RESTART IDENTITY CASCADE`
   );
 });

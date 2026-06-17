@@ -12,6 +12,7 @@ import {
 } from "@srinil-stay/ui/components/sidebar";
 import { Link, useRouterState } from "@tanstack/react-router";
 import {
+  BedDouble,
   LayoutDashboard,
   type LucideIcon,
   Sparkles,
@@ -23,11 +24,12 @@ import NavUser from "./nav-user";
 interface NavItem {
   icon: LucideIcon;
   title: string;
-  to: "/dashboard" | "/invitations/create";
+  to: "/dashboard" | "/invitations/create" | "/units";
 }
 
 const NAV_ITEMS: NavItem[] = [
   { title: "Dashboard", to: "/dashboard", icon: LayoutDashboard },
+  { title: "Units", to: "/units", icon: BedDouble },
   { title: "Invitations", to: "/invitations/create", icon: UserPlus },
 ];
 

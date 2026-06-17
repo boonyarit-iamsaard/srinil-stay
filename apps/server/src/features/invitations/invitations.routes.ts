@@ -1,8 +1,7 @@
-import { auth } from "@srinil-stay/auth";
-import { STAFF_ROLE } from "@srinil-stay/drizzle/schema/roles";
 import { Hono } from "hono";
 import { z } from "zod";
 
+import { requireStaff } from "../../lib/require-staff";
 import {
   acceptInvitation,
   createInvitation,
@@ -30,15 +29,7 @@ async function parseJsonBody(request: { json: () => Promise<unknown> }) {
 export const invitationsRoutes = new Hono();
 
 // Create / resend an invitation. Requires an authenticated Staff session.
-invitationsRoutes.post("/", async (c) => {
-  const session = await auth.api.getSession({ headers: c.req.raw.headers });
-  if (!session) {
-    return c.json({ error: "Unauthorized" }, 401);
-  }
-  if (session.user.role !== STAFF_ROLE) {
-    return c.json({ error: "Forbidden" }, 403);
-  }
-
+invitationsRoutes.post("/", requireStaff, async (c) => {
   const parsed = createSchema.safeParse(await parseJsonBody(c.req));
   if (!parsed.success) {
     return c.json({ error: "Invalid input" }, 400);
