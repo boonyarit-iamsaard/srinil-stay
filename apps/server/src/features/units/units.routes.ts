@@ -1,7 +1,4 @@
-import {
-  createPositiveMoney,
-  SUPPORTED_CURRENCIES,
-} from "@srinil-stay/domain/money";
+import { UnitValidationError } from "@srinil-stay/domain/unit";
 import { Hono } from "hono";
 import { z } from "zod";
 
@@ -13,28 +10,13 @@ import {
   updateUnitActiveState,
 } from "./units.service";
 
-const unitDetailsSchema = z
-  .object({
-    name: z.string().min(1),
-    shortDescription: z.string().min(1),
-    guestCapacity: z.int().positive(),
-    basePriceMinor: z.number(),
-    currency: z.enum(SUPPORTED_CURRENCIES),
-  })
-  .superRefine((input, context) => {
-    try {
-      createPositiveMoney({
-        amountMinor: input.basePriceMinor,
-        currency: input.currency,
-      });
-    } catch {
-      context.addIssue({
-        code: "custom",
-        path: ["basePriceMinor"],
-        message: "Invalid money",
-      });
-    }
-  });
+const unitDetailsSchema = z.object({
+  name: z.string(),
+  shortDescription: z.string(),
+  guestCapacity: z.number(),
+  basePriceMinor: z.number(),
+  currency: z.string(),
+});
 
 const activeStateSchema = z.object({
   active: z.boolean(),
@@ -58,9 +40,17 @@ unitsRoutes.post("/", async (c) => {
     return c.json({ error: "Invalid input" }, 400);
   }
 
-  const unit = await createUnit(parsed.data);
+  try {
+    const unit = await createUnit(parsed.data);
 
-  return c.json(unit, 201);
+    return c.json(unit, 201);
+  } catch (error) {
+    if (error instanceof UnitValidationError) {
+      return c.json({ error: "Invalid input" }, 400);
+    }
+
+    throw error;
+  }
 });
 
 unitsRoutes.get("/", async (c) => c.json({ units: await listUnits() }));
@@ -71,12 +61,20 @@ unitsRoutes.patch("/:id", async (c) => {
     return c.json({ error: "Invalid input" }, 400);
   }
 
-  const unit = await updateUnit(c.req.param("id"), parsed.data);
-  if (!unit) {
-    return c.json({ error: "Unit not found" }, 404);
-  }
+  try {
+    const unit = await updateUnit(c.req.param("id"), parsed.data);
+    if (!unit) {
+      return c.json({ error: "Unit not found" }, 404);
+    }
 
-  return c.json(unit);
+    return c.json(unit);
+  } catch (error) {
+    if (error instanceof UnitValidationError) {
+      return c.json({ error: "Invalid input" }, 400);
+    }
+
+    throw error;
+  }
 });
 
 unitsRoutes.patch("/:id/active", async (c) => {

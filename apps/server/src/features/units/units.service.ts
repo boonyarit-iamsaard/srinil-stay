@@ -1,27 +1,25 @@
-import type { Currency } from "@srinil-stay/domain/money";
+import {
+  createActiveUnit,
+  createUnitDetails,
+  setUnitActiveState,
+  type UnitDetailsInput,
+  unitDetailsToPersistence,
+  unitFromPersistence,
+} from "@srinil-stay/domain/unit";
 import { db } from "@srinil-stay/drizzle";
 import { units } from "@srinil-stay/drizzle/schema/units";
 import { asc, eq } from "drizzle-orm";
 
-export interface CreateUnitInput {
-  basePriceMinor: number;
-  currency: Currency;
-  guestCapacity: number;
-  name: string;
-  shortDescription: string;
-}
-
-export type UpdateUnitInput = CreateUnitInput;
+export type CreateUnitInput = UnitDetailsInput;
+export type UpdateUnitInput = UnitDetailsInput;
 
 export async function createUnit(input: CreateUnitInput) {
+  const unitDetails = createActiveUnit(input);
   const [unit] = await db
     .insert(units)
     .values({
-      name: input.name,
-      shortDescription: input.shortDescription,
-      guestCapacity: input.guestCapacity,
-      basePriceMinor: input.basePriceMinor,
-      currency: input.currency,
+      ...unitDetailsToPersistence(unitDetails),
+      active: unitDetails.active,
     })
     .returning();
 
@@ -37,15 +35,10 @@ export function listUnits() {
 }
 
 export async function updateUnit(id: string, input: UpdateUnitInput) {
+  const unitDetails = createUnitDetails(input);
   const [unit] = await db
     .update(units)
-    .set({
-      name: input.name,
-      shortDescription: input.shortDescription,
-      guestCapacity: input.guestCapacity,
-      basePriceMinor: input.basePriceMinor,
-      currency: input.currency,
-    })
+    .set(unitDetailsToPersistence(unitDetails))
     .where(eq(units.id, id))
     .returning();
 
@@ -53,9 +46,18 @@ export async function updateUnit(id: string, input: UpdateUnitInput) {
 }
 
 export async function updateUnitActiveState(id: string, active: boolean) {
+  const [existingUnit] = await db.select().from(units).where(eq(units.id, id));
+  if (!existingUnit) {
+    return;
+  }
+
+  const nextUnit = setUnitActiveState(
+    unitFromPersistence(existingUnit),
+    active
+  );
   const [unit] = await db
     .update(units)
-    .set({ active })
+    .set({ active: nextUnit.active })
     .where(eq(units.id, id))
     .returning();
 

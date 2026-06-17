@@ -4,7 +4,8 @@
   "private": true,
   "type": "module",
   "exports": {
-    "./money": "./src/money.ts"
+    "./money": "./src/money.ts",
+    "./unit": "./src/unit.ts"
   },
   "scripts": {
     "test": "vitest run",
