@@ -164,21 +164,19 @@ export function UnitManagement() {
     defaultValues: EMPTY_UNIT_FORM_VALUES,
     onSubmit: async ({ value, formApi }) => {
       const { basePrice, ...rest } = value;
-      const response = await fetch(
-        `${env.VITE_SERVER_URL}/units${editingUnit ? `/${editingUnit.id}` : ""}`,
-        {
-          method: editingUnit ? "PATCH" : "POST",
-          credentials: "include",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            ...rest,
-            basePriceMinor: moneyFromMajorUnit({
-              amount: basePrice,
-              currency: rest.currency,
-            }).amountMinor,
-          }),
-        }
-      );
+      const suffix = editingUnit ? `/${editingUnit.id}` : "";
+      const response = await fetch(`${env.VITE_SERVER_URL}/units${suffix}`, {
+        method: editingUnit ? "PATCH" : "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...rest,
+          basePriceMinor: moneyFromMajorUnit({
+            amount: basePrice,
+            currency: rest.currency,
+          }).amountMinor,
+        }),
+      });
 
       if (!response.ok) {
         toast.error(

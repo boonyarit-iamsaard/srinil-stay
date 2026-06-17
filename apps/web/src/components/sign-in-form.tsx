@@ -20,11 +20,13 @@ import { authClient } from "@/lib/auth-client";
 
 import Loader from "./loader";
 
+interface SignInFormProps {
+  onSwitchToSignUp: () => void;
+}
+
 export default function SignInForm({
   onSwitchToSignUp,
-}: {
-  onSwitchToSignUp: () => void;
-}) {
+}: Readonly<SignInFormProps>) {
   const router = useRouter();
   const { isPending } = authClient.useSession();
 

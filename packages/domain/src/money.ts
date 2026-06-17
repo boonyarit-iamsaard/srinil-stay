@@ -19,13 +19,16 @@ export interface MajorUnitMoneyInput {
 
 const MINOR_UNITS_PER_MAJOR_UNIT = 100;
 const THAI_BAHT_LOCALE = "th-TH";
+const SUPPORTED_CURRENCY_SET: ReadonlySet<string> = new Set(
+  SUPPORTED_CURRENCIES
+);
 
 export function createMoney(input: MoneyInput): Money {
   if (!isSupportedCurrency(input.currency)) {
     throw new Error("Unsupported currency");
   }
   if (!Number.isInteger(input.amountMinor)) {
-    throw new Error("Money amount must be an integer minor-unit value");
+    throw new TypeError("Money amount must be an integer minor-unit value");
   }
 
   return {
@@ -62,7 +65,5 @@ export function moneyToMajorUnit(money: Money): number {
 }
 
 function isSupportedCurrency(currency: string): currency is Currency {
-  return SUPPORTED_CURRENCIES.some(
-    (supportedCurrency) => supportedCurrency === currency
-  );
+  return SUPPORTED_CURRENCY_SET.has(currency);
 }

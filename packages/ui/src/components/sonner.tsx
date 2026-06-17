@@ -8,11 +8,23 @@ import {
   TriangleAlertIcon,
 } from "lucide-react";
 import { useTheme } from "next-themes";
+import type { CSSProperties } from "react";
 import type { ToasterProps } from "sonner";
 import { Toaster as Sonner } from "sonner";
 
+interface SonnerCssProperties extends CSSProperties {
+  [key: `--${string}`]: string | number;
+}
+
 const Toaster = ({ ...props }: ToasterProps) => {
   const { theme = "system" } = useTheme();
+
+  const style: SonnerCssProperties = {
+    "--normal-bg": "var(--popover)",
+    "--normal-text": "var(--popover-foreground)",
+    "--normal-border": "var(--border)",
+    "--border-radius": "var(--radius)",
+  };
 
   return (
     <Sonner
@@ -24,14 +36,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
         error: <OctagonXIcon className="size-4" />,
         loading: <Loader2Icon className="size-4 animate-spin" />,
       }}
-      style={
-        {
-          "--normal-bg": "var(--popover)",
-          "--normal-text": "var(--popover-foreground)",
-          "--normal-border": "var(--border)",
-          "--border-radius": "var(--radius)",
-        } as React.CSSProperties
-      }
+      style={style}
       theme={theme as ToasterProps["theme"]}
       toastOptions={{
         classNames: {

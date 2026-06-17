@@ -20,11 +20,13 @@ import { authClient } from "@/lib/auth-client";
 
 import Loader from "./loader";
 
+interface SignUpFormProps {
+  onSwitchToSignIn: () => void;
+}
+
 export default function SignUpForm({
   onSwitchToSignIn,
-}: {
-  onSwitchToSignIn: () => void;
-}) {
+}: Readonly<SignUpFormProps>) {
   const router = useRouter();
   const { isPending } = authClient.useSession();
 

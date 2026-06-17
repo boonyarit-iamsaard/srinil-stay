@@ -11,7 +11,11 @@ export const metadata: Metadata = {
   description: "Srinil Stay is a web application for booking your stay.",
 };
 
-export default function RootLayout({ children }: { children: ReactNode }) {
+interface RootLayoutProps {
+  children: ReactNode;
+}
+
+export default function RootLayout({ children }: Readonly<RootLayoutProps>) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body>

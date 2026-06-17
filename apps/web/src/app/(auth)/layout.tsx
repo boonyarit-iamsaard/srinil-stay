@@ -1,7 +1,11 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 
-export default function AuthLayout({ children }: { children: ReactNode }) {
+interface AuthLayoutProps {
+  children: ReactNode;
+}
+
+export default function AuthLayout({ children }: Readonly<AuthLayoutProps>) {
   return (
     <div className="flex min-h-svh w-full flex-col items-center justify-center gap-6 p-6 md:p-10">
       <Link className="font-semibold text-lg" href="/">

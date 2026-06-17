@@ -7,7 +7,9 @@ import { useEffect } from "react";
 import Loader from "@/components/loader";
 import { authClient } from "@/lib/auth-client";
 
-export default function ProtectedLayout({ children }: { children: ReactNode }) {
+export default function ProtectedLayout({
+  children,
+}: Readonly<{ children: ReactNode }>) {
   const router = useRouter();
   const { data: session, isPending } = authClient.useSession();
 
