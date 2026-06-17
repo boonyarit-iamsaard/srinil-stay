@@ -57,8 +57,30 @@ function postJson(path: string, body: unknown) {
   });
 }
 
+function patchJson(path: string, body: unknown) {
+  return unitsRoutes.request(path, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+}
+
 function get(path: string) {
   return unitsRoutes.request(path);
+}
+
+async function readUnitId(response: Response) {
+  const body = await response.json();
+  if (
+    !body ||
+    typeof body !== "object" ||
+    !("id" in body) ||
+    typeof body.id !== "string"
+  ) {
+    throw new Error("Expected Unit response to include an id");
+  }
+
+  return body.id;
 }
 
 describe("POST /units", () => {
@@ -170,14 +192,102 @@ describe("GET /units", () => {
   });
 });
 
+describe("PATCH /units/:id", () => {
+  it("updates an existing Unit and shows the new details in the Unit list", async () => {
+    stubSession(AUTHENTICATED_SESSION);
+    const unitId = await readUnitId(
+      await postJson("/", {
+        name: "Garden Bungalow",
+        shortDescription: "Quiet standalone unit near the garden.",
+        guestCapacity: 2,
+        basePriceMinor: 180_000,
+        currency: "THB",
+      })
+    );
+
+    const res = await patchJson(`/${unitId}`, {
+      name: "Canal Bungalow",
+      shortDescription: "Updated unit beside the canal.",
+      guestCapacity: 3,
+      basePriceMinor: 220_000,
+      currency: "THB",
+    });
+
+    expect(res.status).toBe(200);
+    expect(await res.json()).toMatchObject({
+      id: unitId,
+      name: "Canal Bungalow",
+      shortDescription: "Updated unit beside the canal.",
+      guestCapacity: 3,
+      basePriceMinor: 220_000,
+      currency: "THB",
+      active: true,
+    });
+
+    const listRes = await get("/");
+
+    expect(await listRes.json()).toMatchObject({
+      units: [
+        {
+          id: unitId,
+          name: "Canal Bungalow",
+          shortDescription: "Updated unit beside the canal.",
+          guestCapacity: 3,
+          basePriceMinor: 220_000,
+          currency: "THB",
+          active: true,
+        },
+      ],
+    });
+  });
+
+  it("rejects non-THB or non-integer money values", async () => {
+    stubSession(AUTHENTICATED_SESSION);
+    const unitId = await readUnitId(
+      await postJson("/", {
+        name: "Garden Bungalow",
+        shortDescription: "Quiet standalone unit near the garden.",
+        guestCapacity: 2,
+        basePriceMinor: 180_000,
+        currency: "THB",
+      })
+    );
+
+    expect(
+      (
+        await patchJson(`/${unitId}`, {
+          name: "Canal Bungalow",
+          shortDescription: "Updated unit beside the canal.",
+          guestCapacity: 3,
+          basePriceMinor: 220_000,
+          currency: "USD",
+        })
+      ).status
+    ).toBe(400);
+    expect(
+      (
+        await patchJson(`/${unitId}`, {
+          name: "Canal Bungalow",
+          shortDescription: "Updated unit beside the canal.",
+          guestCapacity: 3,
+          basePriceMinor: 2200.5,
+          currency: "THB",
+        })
+      ).status
+    ).toBe(400);
+  });
+});
+
 describe("Unit API access", () => {
   it("rejects callers who are not authenticated Staff", async () => {
     stubSession(null);
     expect((await postJson("/", {})).status).toBe(401);
     expect((await get("/")).status).toBe(401);
+    expect((await patchJson("/unit-id", {})).status).toBe(401);
 
     stubSession(GUEST_SESSION);
     expect((await postJson("/", {})).status).toBe(403);
     expect((await get("/")).status).toBe(403);
+    expect((await patchJson("/unit-id", {})).status).toBe(403);
   });
 });

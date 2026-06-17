@@ -10,10 +10,12 @@ import {
 import { Input } from "@srinil-stay/ui/components/input";
 import { Label } from "@srinil-stay/ui/components/label";
 import { useForm } from "@tanstack/react-form";
-import { Plus, RefreshCw } from "lucide-react";
+import { Pencil, Plus, RefreshCw, Save, X } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import z from "zod";
+
+const MINOR_UNITS_PER_BAHT = 100;
 
 interface Unit {
   active: boolean;
@@ -24,6 +26,22 @@ interface Unit {
   name: string;
   shortDescription: string;
 }
+
+interface UnitFormValues {
+  basePrice: number;
+  currency: "THB";
+  guestCapacity: number;
+  name: string;
+  shortDescription: string;
+}
+
+const EMPTY_UNIT_FORM_VALUES: UnitFormValues = {
+  name: "",
+  shortDescription: "",
+  guestCapacity: 2,
+  basePrice: 1,
+  currency: "THB",
+};
 
 const unitSchema = z.object({
   id: z.string(),
@@ -47,7 +65,7 @@ function formatMoney(unit: Unit) {
   return new Intl.NumberFormat("th-TH", {
     style: "currency",
     currency: unit.currency,
-  }).format(unit.basePriceMinor / 100);
+  }).format(unit.basePriceMinor / MINOR_UNITS_PER_BAHT);
 }
 
 async function parseErrorResponse(response: Response) {
@@ -57,9 +75,28 @@ async function parseErrorResponse(response: Response) {
   return parsed.success ? parsed.data.error : undefined;
 }
 
+function unitToFormValues(unit: Unit): UnitFormValues {
+  return {
+    name: unit.name,
+    shortDescription: unit.shortDescription,
+    guestCapacity: unit.guestCapacity,
+    basePrice: unit.basePriceMinor / MINOR_UNITS_PER_BAHT,
+    currency: unit.currency,
+  };
+}
+
+function getSubmitLabel(isSubmitting: boolean, isEditing: boolean) {
+  if (isSubmitting) {
+    return isEditing ? "Saving..." : "Creating...";
+  }
+
+  return isEditing ? "Save Unit" : "Create Unit";
+}
+
 export function UnitManagement() {
   const [units, setUnits] = useState<Unit[]>([]);
   const [isLoadingUnits, setIsLoadingUnits] = useState(true);
+  const [editingUnit, setEditingUnit] = useState<Unit | null>(null);
 
   const loadUnits = useCallback(async () => {
     setIsLoadingUnits(true);
@@ -91,34 +128,33 @@ export function UnitManagement() {
   }, [loadUnits]);
 
   const form = useForm({
-    defaultValues: {
-      name: "",
-      shortDescription: "",
-      guestCapacity: 2,
-      basePrice: 1,
-      currency: "THB" as const,
-    },
+    defaultValues: EMPTY_UNIT_FORM_VALUES,
     onSubmit: async ({ value, formApi }) => {
       const { basePrice, ...rest } = value;
-      const response = await fetch(`${env.VITE_SERVER_URL}/units`, {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...rest,
-          basePriceMinor: basePrice * 100,
-        }),
-      });
+      const response = await fetch(
+        `${env.VITE_SERVER_URL}/units${editingUnit ? `/${editingUnit.id}` : ""}`,
+        {
+          method: editingUnit ? "PATCH" : "POST",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            ...rest,
+            basePriceMinor: basePrice * MINOR_UNITS_PER_BAHT,
+          }),
+        }
+      );
 
       if (!response.ok) {
         toast.error(
-          (await parseErrorResponse(response)) ?? "Could not create unit"
+          (await parseErrorResponse(response)) ??
+            `Could not ${editingUnit ? "update" : "create"} unit`
         );
         return;
       }
 
-      toast.success(`${value.name} created`);
-      formApi.reset();
+      toast.success(`${value.name} ${editingUnit ? "updated" : "created"}`);
+      setEditingUnit(null);
+      formApi.reset(EMPTY_UNIT_FORM_VALUES);
       await loadUnits();
     },
     validators: {
@@ -132,11 +168,21 @@ export function UnitManagement() {
     },
   });
 
+  const startEditing = (unit: Unit) => {
+    setEditingUnit(unit);
+    form.reset(unitToFormValues(unit));
+  };
+
+  const cancelEditing = () => {
+    setEditingUnit(null);
+    form.reset(EMPTY_UNIT_FORM_VALUES);
+  };
+
   return (
     <div className="grid min-h-0 gap-4 p-4 lg:grid-cols-[minmax(20rem,24rem)_1fr]">
       <Card className="self-start">
         <CardHeader>
-          <CardTitle>Create Unit</CardTitle>
+          <CardTitle>{editingUnit ? "Edit Unit" : "Create Unit"}</CardTitle>
           <CardDescription>Core bookable Unit attributes</CardDescription>
         </CardHeader>
         <CardContent>
@@ -265,19 +311,27 @@ export function UnitManagement() {
               )}
             </form.Field>
 
-            <form.Subscribe
-              selector={(state) => ({
-                canSubmit: state.canSubmit,
-                isSubmitting: state.isSubmitting,
-              })}
-            >
-              {({ canSubmit, isSubmitting }) => (
-                <Button disabled={!canSubmit || isSubmitting} type="submit">
-                  <Plus />
-                  {isSubmitting ? "Creating..." : "Create Unit"}
+            <div className="flex flex-wrap gap-2">
+              <form.Subscribe
+                selector={(state) => ({
+                  canSubmit: state.canSubmit,
+                  isSubmitting: state.isSubmitting,
+                })}
+              >
+                {({ canSubmit, isSubmitting }) => (
+                  <Button disabled={!canSubmit || isSubmitting} type="submit">
+                    {editingUnit ? <Save /> : <Plus />}
+                    {getSubmitLabel(isSubmitting, editingUnit !== null)}
+                  </Button>
+                )}
+              </form.Subscribe>
+              {editingUnit && (
+                <Button onClick={cancelEditing} type="button" variant="outline">
+                  <X />
+                  Cancel
                 </Button>
               )}
-            </form.Subscribe>
+            </div>
           </form>
         </CardContent>
       </Card>
@@ -312,6 +366,7 @@ export function UnitManagement() {
                 <th className="px-4 py-3 font-medium">Guests</th>
                 <th className="px-4 py-3 font-medium">Base price</th>
                 <th className="px-4 py-3 font-medium">Status</th>
+                <th className="px-4 py-3 text-right font-medium">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -336,13 +391,24 @@ export function UnitManagement() {
                       {unit.active ? "Active" : "Inactive"}
                     </span>
                   </td>
+                  <td className="px-4 py-3 text-right">
+                    <Button
+                      aria-label={`Edit ${unit.name}`}
+                      onClick={() => startEditing(unit)}
+                      size="icon-sm"
+                      type="button"
+                      variant="ghost"
+                    >
+                      <Pencil />
+                    </Button>
+                  </td>
                 </tr>
               ))}
               {units.length === 0 && (
                 <tr>
                   <td
                     className="px-4 py-10 text-center text-muted-foreground text-sm"
-                    colSpan={4}
+                    colSpan={5}
                   >
                     {isLoadingUnits ? "Loading units..." : "No units"}
                   </td>

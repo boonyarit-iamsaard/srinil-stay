@@ -3,9 +3,9 @@ import { Hono } from "hono";
 import { z } from "zod";
 
 import { requireStaff } from "../../lib/require-staff";
-import { createUnit, listUnits } from "./units.service";
+import { createUnit, listUnits, updateUnit } from "./units.service";
 
-const createSchema = z.object({
+const unitDetailsSchema = z.object({
   name: z.string().min(1),
   shortDescription: z.string().min(1),
   guestCapacity: z.int().positive(),
@@ -26,7 +26,7 @@ export const unitsRoutes = new Hono();
 unitsRoutes.use("*", requireStaff);
 
 unitsRoutes.post("/", async (c) => {
-  const parsed = createSchema.safeParse(await parseJsonBody(c.req));
+  const parsed = unitDetailsSchema.safeParse(await parseJsonBody(c.req));
   if (!parsed.success) {
     return c.json({ error: "Invalid input" }, 400);
   }
@@ -37,3 +37,17 @@ unitsRoutes.post("/", async (c) => {
 });
 
 unitsRoutes.get("/", async (c) => c.json({ units: await listUnits() }));
+
+unitsRoutes.patch("/:id", async (c) => {
+  const parsed = unitDetailsSchema.safeParse(await parseJsonBody(c.req));
+  if (!parsed.success) {
+    return c.json({ error: "Invalid input" }, 400);
+  }
+
+  const unit = await updateUnit(c.req.param("id"), parsed.data);
+  if (!unit) {
+    return c.json({ error: "Unit not found" }, 404);
+  }
+
+  return c.json(unit);
+});
