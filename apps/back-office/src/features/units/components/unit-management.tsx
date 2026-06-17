@@ -1,5 +1,5 @@
+import type { Currency } from "@srinil-stay/domain/money";
 import {
-  type Currency,
   createMoney,
   formatMoney as formatMoneyValue,
   moneyFromMajorUnit,

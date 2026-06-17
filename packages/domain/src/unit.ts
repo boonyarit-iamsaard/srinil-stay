@@ -1,4 +1,5 @@
-import { type Currency, createPositiveMoney, type Money } from "./money";
+import type { Currency, Money } from "./money";
+import { createPositiveMoney } from "./money";
 
 export interface UnitDetailsInput {
   basePriceMinor: number;

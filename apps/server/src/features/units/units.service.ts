@@ -1,8 +1,8 @@
+import type { UnitDetailsInput } from "@srinil-stay/domain/unit";
 import {
   createActiveUnit,
   createUnitDetails,
   setUnitActiveState,
-  type UnitDetailsInput,
   unitDetailsToPersistence,
   unitFromPersistence,
 } from "@srinil-stay/domain/unit";

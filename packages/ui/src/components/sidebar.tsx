@@ -20,11 +20,11 @@ import {
 } from "@srinil-stay/ui/components/tooltip";
 import { useIsMobile } from "@srinil-stay/ui/hooks/use-mobile";
 import { cn } from "@srinil-stay/ui/lib/utils";
-import { cva, type VariantProps } from "class-variance-authority";
+import type { VariantProps } from "class-variance-authority";
+import { cva } from "class-variance-authority";
 import { PanelLeftIcon } from "lucide-react";
+import type { ComponentProps, CSSProperties } from "react";
 import {
-  type ComponentProps,
-  type CSSProperties,
   createContext,
   useCallback,
   useContext,

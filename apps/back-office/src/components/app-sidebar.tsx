@@ -11,13 +11,8 @@ import {
   SidebarRail,
 } from "@srinil-stay/ui/components/sidebar";
 import { Link, useRouterState } from "@tanstack/react-router";
-import {
-  BedDouble,
-  LayoutDashboard,
-  type LucideIcon,
-  Sparkles,
-  UserPlus,
-} from "lucide-react";
+import type { LucideIcon } from "lucide-react";
+import { BedDouble, LayoutDashboard, Sparkles, UserPlus } from "lucide-react";
 
 import NavUser from "./nav-user";
 
