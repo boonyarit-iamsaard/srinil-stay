@@ -1,6 +1,11 @@
 import { randomBytes } from "node:crypto";
 
 import { auth } from "@srinil-stay/auth";
+import {
+  INVITATION_STATUS,
+  type InvitationStatus,
+  invitationLifecycleStatus,
+} from "@srinil-stay/domain/invitation";
 import { STAFF_ROLE } from "@srinil-stay/domain/role";
 import { db } from "@srinil-stay/drizzle";
 import { users } from "@srinil-stay/drizzle/schema/auth";
@@ -12,8 +17,8 @@ import { sendInvitationEmail } from "./invitations.email";
 const EXPIRY_MS = 12 * 60 * 60 * 1000; // 12 hours
 
 type Result<T extends object = object> =
-  | ({ ok: true } & T)
-  | { ok: false; code: "USER_EXISTS" | "NOT_FOUND" | "EXPIRED" | "ACCEPTED" };
+  | ({ ok: true; status: InvitationStatus } & T)
+  | { ok: false; status: InvitationStatus };
 
 /**
  * Create (or resend) an invitation. Idempotent on `email`: the unique
@@ -30,7 +35,7 @@ export async function createInvitation(input: {
     where: eq(users.email, email),
   });
   if (existingUser) {
-    return { ok: false, code: "USER_EXISTS" };
+    return { ok: false, status: INVITATION_STATUS.EXISTING_USER };
   }
 
   const token = randomBytes(32).toString("base64url");
@@ -51,7 +56,7 @@ export async function createInvitation(input: {
 
   await sendInvitationEmail(invitation);
 
-  return { ok: true };
+  return { ok: true, status: INVITATION_STATUS.PENDING };
 }
 
 /** Resolve a token for the accept page. */
@@ -63,16 +68,20 @@ export async function resolveInvitation(
   });
 
   if (!invitation) {
-    return { ok: false, code: "NOT_FOUND" };
-  }
-  if (invitation.acceptedAt) {
-    return { ok: false, code: "ACCEPTED" };
-  }
-  if (invitation.expiresAt <= new Date()) {
-    return { ok: false, code: "EXPIRED" };
+    return { ok: false, status: INVITATION_STATUS.MISSING };
   }
 
-  return { ok: true, name: invitation.name, email: invitation.email };
+  const status = invitationLifecycleStatus(invitation);
+  if (status !== INVITATION_STATUS.PENDING) {
+    return { ok: false, status };
+  }
+
+  return {
+    ok: true,
+    status,
+    name: invitation.name,
+    email: invitation.email,
+  };
 }
 
 /**
@@ -103,13 +112,16 @@ export async function acceptInvitation(input: {
     const invitation = await db.query.invitations.findFirst({
       where: eq(invitations.token, input.token),
     });
-    if (!invitation) {
-      return { ok: false, code: "NOT_FOUND" };
-    }
-    if (invitation.acceptedAt) {
-      return { ok: false, code: "ACCEPTED" };
-    }
-    return { ok: false, code: "EXPIRED" };
+    const status = invitationLifecycleStatus(invitation, now);
+    return { ok: false, status };
+  }
+
+  const existingUser = await db.query.users.findFirst({
+    where: eq(users.email, claimed.email),
+  });
+  if (existingUser) {
+    await releaseInvitationClaim(claimed.id);
+    return { ok: false, status: INVITATION_STATUS.EXISTING_USER };
   }
 
   try {
@@ -123,12 +135,24 @@ export async function acceptInvitation(input: {
     });
   } catch (error) {
     // Release the claim so a transient failure doesn't burn the invitation.
-    await db
-      .update(invitations)
-      .set({ acceptedAt: null })
-      .where(eq(invitations.id, claimed.id));
+    await releaseInvitationClaim(claimed.id);
+
+    const userCreatedConcurrently = await db.query.users.findFirst({
+      where: eq(users.email, claimed.email),
+    });
+    if (userCreatedConcurrently) {
+      return { ok: false, status: INVITATION_STATUS.EXISTING_USER };
+    }
+
     throw error;
   }
 
-  return { ok: true };
+  return { ok: true, status: INVITATION_STATUS.ACCEPTED };
+}
+
+async function releaseInvitationClaim(invitationId: string): Promise<void> {
+  await db
+    .update(invitations)
+    .set({ acceptedAt: null })
+    .where(eq(invitations.id, invitationId));
 }

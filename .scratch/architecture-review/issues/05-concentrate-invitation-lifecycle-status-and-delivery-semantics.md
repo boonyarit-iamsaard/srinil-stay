@@ -13,16 +13,16 @@ Invitation-facing interface.
 
 ## Acceptance criteria
 
-- [ ] Staff can still send or resend an Invitation from the back-office app.
-- [ ] Invitees can still resolve a valid Invitation token and accept it by
+- [x] Staff can still send or resend an Invitation from the back-office app.
+- [x] Invitees can still resolve a valid Invitation token and accept it by
       setting a password.
-- [ ] Accepted, expired, missing, and existing-user Invitation outcomes have one
+- [x] Accepted, expired, missing, and existing-user Invitation outcomes have one
       concentrated status vocabulary that routes and Staff UI can map from.
-- [ ] Invitation email rendering and accept-link construction are covered by
+- [x] Invitation email rendering and accept-link construction are covered by
       focused tests.
-- [ ] First-Staff bootstrap remains best-effort and still does not block server
+- [x] First-Staff bootstrap remains best-effort and still does not block server
       boot on delivery failure.
-- [ ] The implementation does not adopt Better Auth's organization plugin or
+- [x] The implementation does not adopt Better Auth's organization plugin or
       introduce Organization, Member, or Team tenancy concepts.
 
 ## Blocked by

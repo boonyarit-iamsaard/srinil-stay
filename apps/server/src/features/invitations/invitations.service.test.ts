@@ -1,9 +1,11 @@
+import { auth } from "@srinil-stay/auth";
+import { INVITATION_STATUS } from "@srinil-stay/domain/invitation";
 import { DEFAULT_ROLE, STAFF_ROLE } from "@srinil-stay/domain/role";
 import { db } from "@srinil-stay/drizzle";
 import { users } from "@srinil-stay/drizzle/schema/auth";
 import { invitations } from "@srinil-stay/drizzle/schema/invitations";
 import { eq } from "drizzle-orm";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { sendMail } from "../../lib/mailer";
 import {
@@ -18,6 +20,10 @@ const PASSWORD = "password123";
 
 beforeEach(() => {
   vi.clearAllMocks();
+});
+
+afterEach(() => {
+  vi.restoreAllMocks();
 });
 
 async function tokenFor(email: string) {
@@ -38,7 +44,10 @@ describe("createInvitation", () => {
       name: "New Staff",
     });
 
-    expect(result.ok).toBe(true);
+    expect(result).toEqual({
+      ok: true,
+      status: INVITATION_STATUS.PENDING,
+    });
     const row = await tokenFor("new@example.com");
     expect(row).toMatchObject({ name: "New Staff", acceptedAt: null });
     expect(row.token).toBeTruthy();
@@ -73,7 +82,10 @@ describe("createInvitation", () => {
       name: "Taken",
     });
 
-    expect(result).toEqual({ ok: false, code: "USER_EXISTS" });
+    expect(result).toEqual({
+      ok: false,
+      status: INVITATION_STATUS.EXISTING_USER,
+    });
     expect(sendMail).not.toHaveBeenCalled();
   });
 
@@ -93,19 +105,20 @@ describe("resolveInvitation", () => {
 
     expect(result).toEqual({
       ok: true,
+      status: INVITATION_STATUS.PENDING,
       name: "Pending",
       email: "pending@example.com",
     });
   });
 
-  it("reports NOT_FOUND for an unknown token", async () => {
+  it("reports missing for an unknown token", async () => {
     expect(await resolveInvitation("nope")).toEqual({
       ok: false,
-      code: "NOT_FOUND",
+      status: INVITATION_STATUS.MISSING,
     });
   });
 
-  it("reports EXPIRED for a past token", async () => {
+  it("reports expired for a past token", async () => {
     await db.insert(invitations).values({
       email: "old@example.com",
       name: "Old",
@@ -115,18 +128,18 @@ describe("resolveInvitation", () => {
 
     expect(await resolveInvitation("expired-token")).toEqual({
       ok: false,
-      code: "EXPIRED",
+      status: INVITATION_STATUS.EXPIRED,
     });
   });
 
-  it("reports ACCEPTED once consumed", async () => {
+  it("reports accepted once consumed", async () => {
     await createInvitation({ email: "done@example.com", name: "Done" });
     const { token } = await tokenFor("done@example.com");
     await acceptInvitation({ token, password: PASSWORD });
 
     expect(await resolveInvitation(token)).toEqual({
       ok: false,
-      code: "ACCEPTED",
+      status: INVITATION_STATUS.ACCEPTED,
     });
   });
 });
@@ -138,7 +151,10 @@ describe("acceptInvitation", () => {
 
     const result = await acceptInvitation({ token, password: PASSWORD });
 
-    expect(result).toEqual({ ok: true });
+    expect(result).toEqual({
+      ok: true,
+      status: INVITATION_STATUS.ACCEPTED,
+    });
     const userRows = await db
       .select()
       .from(users)
@@ -161,7 +177,7 @@ describe("acceptInvitation", () => {
     expect(results.filter((r) => r.ok)).toHaveLength(1);
     expect(results.find((r) => !r.ok)).toEqual({
       ok: false,
-      code: "ACCEPTED",
+      status: INVITATION_STATUS.ACCEPTED,
     });
     const userRows = await db
       .select()
@@ -195,7 +211,10 @@ describe("acceptInvitation", () => {
 
     expect(
       await acceptInvitation({ token: "late-token", password: PASSWORD })
-    ).toEqual({ ok: false, code: "EXPIRED" });
+    ).toEqual({
+      ok: false,
+      status: INVITATION_STATUS.EXPIRED,
+    });
     const userRows = await db
       .select()
       .from(users)
@@ -203,9 +222,7 @@ describe("acceptInvitation", () => {
     expect(userRows).toHaveLength(0);
   });
 
-  it("releases the claim when user creation fails (compensation)", async () => {
-    // Seed an invitation whose email already belongs to a user, so the
-    // createUser call hits the existing users.email unique constraint and throws.
+  it("reports existing-user and releases the claim when a user already owns the invitation email", async () => {
     await db
       .insert(users)
       .values({ name: "Clash", email: "clash@example.com" });
@@ -218,9 +235,27 @@ describe("acceptInvitation", () => {
 
     await expect(
       acceptInvitation({ token: "clash-token", password: PASSWORD })
-    ).rejects.toThrow();
+    ).resolves.toEqual({
+      ok: false,
+      status: INVITATION_STATUS.EXISTING_USER,
+    });
 
     const row = await tokenFor("clash@example.com");
+    expect(row.acceptedAt).toBeNull();
+  });
+
+  it("releases the claim when user creation fails transiently", async () => {
+    await createInvitation({ email: "fail@example.com", name: "Fail" });
+    const { token } = await tokenFor("fail@example.com");
+    vi.spyOn(auth.api, "createUser").mockRejectedValueOnce(
+      new Error("auth unavailable")
+    );
+
+    await expect(
+      acceptInvitation({ token, password: PASSWORD })
+    ).rejects.toThrow("auth unavailable");
+
+    const row = await tokenFor("fail@example.com");
     expect(row.acceptedAt).toBeNull();
   });
 });

@@ -1,3 +1,4 @@
+import { INVITATION_STATUS } from "@srinil-stay/domain/invitation";
 import { env } from "@srinil-stay/env/back-office";
 import { Button } from "@srinil-stay/ui/components/button";
 import {
@@ -15,6 +16,17 @@ import { toast } from "sonner";
 import z from "zod";
 
 import { authClient } from "@/lib/auth-client";
+
+const invitationAcceptErrorSchema = z.object({
+  status: z
+    .enum([
+      INVITATION_STATUS.ACCEPTED,
+      INVITATION_STATUS.EXPIRED,
+      INVITATION_STATUS.EXISTING_USER,
+      INVITATION_STATUS.MISSING,
+    ])
+    .optional(),
+});
 
 interface AcceptInvitationFormProps {
   email: string;
@@ -44,8 +56,19 @@ export function AcceptInvitationForm({
       );
 
       if (!response.ok) {
-        if (response.status === 409) {
-          toast.error("This invitation was already accepted. Please sign in.");
+        const parsed = invitationAcceptErrorSchema.safeParse(
+          await response.json().catch(() => null)
+        );
+        const status = parsed.success ? parsed.data.status : undefined;
+        if (
+          status === INVITATION_STATUS.ACCEPTED ||
+          status === INVITATION_STATUS.EXISTING_USER
+        ) {
+          toast.error(
+            status === INVITATION_STATUS.ACCEPTED
+              ? "This invitation was already accepted. Please sign in."
+              : "An account already exists for this email. Please sign in."
+          );
           navigate({ to: "/login" });
           return;
         }

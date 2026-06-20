@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "exports": {
+    "./invitation": "./src/invitation.ts",
     "./money": "./src/money.ts",
     "./role": "./src/role.ts",
     "./unit": "./src/unit.ts"

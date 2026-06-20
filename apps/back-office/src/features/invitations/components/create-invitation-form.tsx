@@ -1,3 +1,4 @@
+import { INVITATION_STATUS } from "@srinil-stay/domain/invitation";
 import { env } from "@srinil-stay/env/back-office";
 import { Button } from "@srinil-stay/ui/components/button";
 import {
@@ -14,8 +15,27 @@ import { toast } from "sonner";
 import z from "zod";
 
 const errorResponseSchema = z.object({
+  status: z
+    .enum([
+      INVITATION_STATUS.ACCEPTED,
+      INVITATION_STATUS.EXPIRED,
+      INVITATION_STATUS.EXISTING_USER,
+      INVITATION_STATUS.MISSING,
+    ])
+    .optional(),
   error: z.string().optional(),
 });
+
+function invitationErrorMessage(
+  status: z.infer<typeof errorResponseSchema>["status"],
+  fallback?: string
+): string {
+  if (status === INVITATION_STATUS.EXISTING_USER) {
+    return "A user with this email already exists";
+  }
+
+  return fallback ?? "Could not send invitation";
+}
 
 export function CreateInvitationForm() {
   const form = useForm({
@@ -37,7 +57,7 @@ export function CreateInvitationForm() {
         );
         toast.error(
           parsed.success
-            ? (parsed.data.error ?? "Could not send invitation")
+            ? invitationErrorMessage(parsed.data.status, parsed.data.error)
             : "Could not send invitation"
         );
         return;

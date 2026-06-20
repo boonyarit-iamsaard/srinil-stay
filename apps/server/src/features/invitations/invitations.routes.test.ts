@@ -1,4 +1,5 @@
 import { auth } from "@srinil-stay/auth";
+import { INVITATION_STATUS } from "@srinil-stay/domain/invitation";
 import { DEFAULT_ROLE, STAFF_ROLE } from "@srinil-stay/domain/role";
 import { db } from "@srinil-stay/drizzle";
 import { invitations } from "@srinil-stay/drizzle/schema/invitations";
@@ -98,6 +99,10 @@ describe("POST /invitations", () => {
       name: "Invited",
     });
     expect(res.status).toBe(201);
+    expect(await res.json()).toEqual({
+      ok: true,
+      status: INVITATION_STATUS.PENDING,
+    });
     expect(await tokenFor("invited@example.com")).toBeDefined();
   });
 
@@ -112,6 +117,10 @@ describe("POST /invitations", () => {
       name: "First",
     });
     expect(res.status).toBe(409);
+    expect(await res.json()).toEqual({
+      status: INVITATION_STATUS.EXISTING_USER,
+      error: "A user with this email already exists",
+    });
   });
 });
 
@@ -125,7 +134,7 @@ describe("POST /invitations/accept", () => {
     expect(res.status).toBe(400);
   });
 
-  it("returns 409 ALREADY_ACCEPTED on a second accept", async () => {
+  it("returns accepted status on a second accept", async () => {
     await createInvitation({ email: "twice@example.com", name: "Twice" });
     const { token } = await tokenFor("twice@example.com");
 
@@ -133,7 +142,10 @@ describe("POST /invitations/accept", () => {
 
     const res = await acceptInvitationViaRoute(token);
     expect(res.status).toBe(409);
-    expect(await res.json()).toEqual({ error: "ALREADY_ACCEPTED" });
+    expect(await res.json()).toEqual({
+      status: INVITATION_STATUS.ACCEPTED,
+      error: "Invitation has already been accepted",
+    });
   });
 });
 
@@ -145,6 +157,7 @@ describe("GET /invitations/:token", () => {
     const res = await invitationsRoutes.request(`/${token}`);
     expect(res.status).toBe(200);
     expect(await res.json()).toEqual({
+      status: INVITATION_STATUS.PENDING,
       name: "Looker",
       email: "look@example.com",
     });
@@ -153,6 +166,10 @@ describe("GET /invitations/:token", () => {
   it("returns 404 for an unknown token", async () => {
     const res = await invitationsRoutes.request("/unknown");
     expect(res.status).toBe(404);
+    expect(await res.json()).toEqual({
+      status: INVITATION_STATUS.MISSING,
+      error: "Invitation was not found",
+    });
   });
 
   it("returns 410 for an expired token", async () => {
@@ -165,5 +182,22 @@ describe("GET /invitations/:token", () => {
 
     const res = await invitationsRoutes.request("/gone-token");
     expect(res.status).toBe(410);
+    expect(await res.json()).toEqual({
+      status: INVITATION_STATUS.EXPIRED,
+      error: "Invitation has expired",
+    });
+  });
+
+  it("returns 410 for an accepted token", async () => {
+    await createInvitation({ email: "done@example.com", name: "Done" });
+    const { token } = await tokenFor("done@example.com");
+    await acceptInvitationViaRoute(token);
+
+    const res = await invitationsRoutes.request(`/${token}`);
+    expect(res.status).toBe(410);
+    expect(await res.json()).toEqual({
+      status: INVITATION_STATUS.ACCEPTED,
+      error: "Invitation has already been accepted",
+    });
   });
 });
