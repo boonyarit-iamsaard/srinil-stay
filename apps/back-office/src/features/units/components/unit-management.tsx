@@ -1,10 +1,10 @@
 import type { Currency } from "@srinil-stay/domain/money";
 import {
-  createMoney,
   formatMoney as formatMoneyValue,
   moneyFromMajorUnit,
   moneyToMajorUnit,
 } from "@srinil-stay/domain/money";
+import type { UnitView } from "@srinil-stay/domain/unit";
 import { env } from "@srinil-stay/env/back-office";
 import { Button } from "@srinil-stay/ui/components/button";
 import {
@@ -30,15 +30,15 @@ import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import z from "zod";
 
-interface Unit {
-  active: boolean;
-  basePriceMinor: number;
-  currency: Currency;
-  guestCapacity: number;
-  id: string;
-  name: string;
-  shortDescription: string;
-}
+import {
+  unitActiveStateAction,
+  unitActiveStateBadge,
+  unitActiveStateResult,
+  unitFormTitle,
+  unitSaveAction,
+  unitSaveResult,
+  unitSubmitLabel,
+} from "../unit-labels";
 
 interface UnitFormValues {
   basePrice: number;
@@ -61,10 +61,12 @@ const unitSchema = z.object({
   name: z.string(),
   shortDescription: z.string(),
   guestCapacity: z.number(),
-  basePriceMinor: z.number(),
-  currency: z.literal("THB"),
+  basePrice: z.object({
+    amountMinor: z.number(),
+    currency: z.literal("THB"),
+  }),
   active: z.boolean(),
-});
+}) satisfies z.ZodType<UnitView>;
 
 const unitsResponseSchema = z.object({
   units: z.array(unitSchema),
@@ -74,13 +76,8 @@ const errorResponseSchema = z.object({
   error: z.string().optional(),
 });
 
-function formatMoney(unit: Unit) {
-  return formatMoneyValue(
-    createMoney({
-      amountMinor: unit.basePriceMinor,
-      currency: unit.currency,
-    })
-  );
+function formatMoney(unit: UnitView) {
+  return formatMoneyValue(unit.basePrice);
 }
 
 async function parseErrorResponse(response: Response) {
@@ -90,43 +87,26 @@ async function parseErrorResponse(response: Response) {
   return parsed.success ? parsed.data.error : undefined;
 }
 
-function unitToFormValues(unit: Unit): UnitFormValues {
+function unitToFormValues(unit: UnitView): UnitFormValues {
   return {
     name: unit.name,
     shortDescription: unit.shortDescription,
     guestCapacity: unit.guestCapacity,
-    basePrice: moneyToMajorUnit(
-      createMoney({
-        amountMinor: unit.basePriceMinor,
-        currency: unit.currency,
-      })
-    ),
-    currency: unit.currency,
+    basePrice: moneyToMajorUnit(unit.basePrice),
+    currency: unit.basePrice.currency,
   };
 }
 
-function getSubmitLabel(isSubmitting: boolean, isEditing: boolean) {
-  if (isSubmitting) {
-    return isEditing ? "Saving..." : "Creating...";
-  }
-
-  return isEditing ? "Save Unit" : "Create Unit";
-}
-
-function getUnitRowClassName(unit: Unit) {
+function getUnitRowClassName(unit: UnitView) {
   return unit.active
     ? "border-b last:border-0"
     : "border-b bg-muted/20 text-muted-foreground last:border-0";
 }
 
-function getActiveStateActionLabel(unit: Unit) {
-  return unit.active ? "Deactivate" : "Reactivate";
-}
-
 export function UnitManagement() {
-  const [units, setUnits] = useState<Unit[]>([]);
+  const [units, setUnits] = useState<UnitView[]>([]);
   const [isLoadingUnits, setIsLoadingUnits] = useState(true);
-  const [editingUnit, setEditingUnit] = useState<Unit | null>(null);
+  const [editingUnit, setEditingUnit] = useState<UnitView | null>(null);
   const [updatingActiveUnitId, setUpdatingActiveUnitId] = useState<
     string | null
   >(null);
@@ -181,12 +161,12 @@ export function UnitManagement() {
       if (!response.ok) {
         toast.error(
           (await parseErrorResponse(response)) ??
-            `Could not ${editingUnit ? "update" : "create"} unit`
+            `Could not ${unitSaveAction(editingUnit !== null)} unit`
         );
         return;
       }
 
-      toast.success(`${value.name} ${editingUnit ? "updated" : "created"}`);
+      toast.success(`${value.name} ${unitSaveResult(editingUnit !== null)}`);
       setEditingUnit(null);
       formApi.reset(EMPTY_UNIT_FORM_VALUES);
       await loadUnits();
@@ -202,7 +182,7 @@ export function UnitManagement() {
     },
   });
 
-  const startEditing = (unit: Unit) => {
+  const startEditing = (unit: UnitView) => {
     setEditingUnit(unit);
     form.reset(unitToFormValues(unit));
   };
@@ -212,7 +192,7 @@ export function UnitManagement() {
     form.reset(EMPTY_UNIT_FORM_VALUES);
   };
 
-  const updateActiveState = async (unit: Unit) => {
+  const updateActiveState = async (unit: UnitView) => {
     setUpdatingActiveUnitId(unit.id);
     const nextActiveState = !unit.active;
     const response = await fetch(
@@ -229,14 +209,12 @@ export function UnitManagement() {
     if (!response.ok) {
       toast.error(
         (await parseErrorResponse(response)) ??
-          `Could not ${unit.active ? "deactivate" : "reactivate"} unit`
+          `Could not ${unitActiveStateAction(unit.active).toLowerCase()} unit`
       );
       return;
     }
 
-    toast.success(
-      `${unit.name} ${nextActiveState ? "reactivated" : "deactivated"}`
-    );
+    toast.success(`${unit.name} ${unitActiveStateResult(nextActiveState)}`);
     await loadUnits();
   };
 
@@ -244,7 +222,7 @@ export function UnitManagement() {
     <div className="grid min-h-0 gap-4 p-4 lg:grid-cols-[minmax(20rem,24rem)_1fr]">
       <Card className="self-start">
         <CardHeader>
-          <CardTitle>{editingUnit ? "Edit Unit" : "Create Unit"}</CardTitle>
+          <CardTitle>{unitFormTitle(editingUnit !== null)}</CardTitle>
           <CardDescription>Core bookable Unit attributes</CardDescription>
         </CardHeader>
         <CardContent>
@@ -383,7 +361,7 @@ export function UnitManagement() {
                 {({ canSubmit, isSubmitting }) => (
                   <Button disabled={!canSubmit || isSubmitting} type="submit">
                     {editingUnit ? <Save /> : <Plus />}
-                    {getSubmitLabel(isSubmitting, editingUnit !== null)}
+                    {unitSubmitLabel(isSubmitting, editingUnit !== null)}
                   </Button>
                 )}
               </form.Subscribe>
@@ -450,7 +428,7 @@ export function UnitManagement() {
                           : "rounded-md bg-muted px-2 py-1 text-muted-foreground text-xs"
                       }
                     >
-                      {unit.active ? "Active" : "Inactive"}
+                      {unitActiveStateBadge(unit.active)}
                     </span>
                   </td>
                   <td className="px-4 py-3">
@@ -465,7 +443,7 @@ export function UnitManagement() {
                         <Pencil />
                       </Button>
                       <Button
-                        aria-label={`${getActiveStateActionLabel(unit)} ${unit.name}`}
+                        aria-label={`${unitActiveStateAction(unit.active)} ${unit.name}`}
                         disabled={updatingActiveUnitId === unit.id}
                         onClick={() => updateActiveState(unit)}
                         size="sm"
@@ -473,7 +451,7 @@ export function UnitManagement() {
                         variant={unit.active ? "destructive" : "outline"}
                       >
                         {unit.active ? <Power /> : <RotateCcw />}
-                        {getActiveStateActionLabel(unit)}
+                        {unitActiveStateAction(unit.active)}
                       </Button>
                     </div>
                   </td>

@@ -1,4 +1,8 @@
-import { INVITATION_STATUS } from "@srinil-stay/domain/invitation";
+import {
+  INVITATION_STATUS,
+  invitationStatusMessage,
+} from "@srinil-stay/domain/invitation";
+import { INVITATION_EXPIRY } from "@srinil-stay/domain/invitation-expiry";
 import { env } from "@srinil-stay/env/back-office";
 import { Button } from "@srinil-stay/ui/components/button";
 import {
@@ -30,8 +34,8 @@ function invitationErrorMessage(
   status: z.infer<typeof errorResponseSchema>["status"],
   fallback?: string
 ): string {
-  if (status === INVITATION_STATUS.EXISTING_USER) {
-    return "A user with this email already exists";
+  if (status) {
+    return invitationStatusMessage(status);
   }
 
   return fallback ?? "Could not send invitation";
@@ -80,7 +84,7 @@ export function CreateInvitationForm() {
         <CardTitle className="text-xl">Invite a staff member</CardTitle>
         <CardDescription>
           They'll receive an email with a link to set a password. The link
-          expires in 12 hours.
+          expires in {INVITATION_EXPIRY.humanLabel}.
         </CardDescription>
       </CardHeader>
       <CardContent>

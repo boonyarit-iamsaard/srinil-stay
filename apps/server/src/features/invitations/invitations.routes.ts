@@ -1,6 +1,7 @@
+import type { InvitationStatus } from "@srinil-stay/domain/invitation";
 import {
   INVITATION_STATUS,
-  type InvitationStatus,
+  invitationStatusMessage,
 } from "@srinil-stay/domain/invitation";
 import { Hono } from "hono";
 import { z } from "zod";
@@ -28,18 +29,6 @@ async function parseJsonBody(request: { json: () => Promise<unknown> }) {
   } catch {
     return null;
   }
-}
-
-const INVITATION_STATUS_MESSAGES = {
-  [INVITATION_STATUS.ACCEPTED]: "Invitation has already been accepted",
-  [INVITATION_STATUS.EXPIRED]: "Invitation has expired",
-  [INVITATION_STATUS.EXISTING_USER]: "A user with this email already exists",
-  [INVITATION_STATUS.MISSING]: "Invitation was not found",
-  [INVITATION_STATUS.PENDING]: "Invitation is pending",
-} as const satisfies Record<InvitationStatus, string>;
-
-function invitationStatusMessage(status: InvitationStatus): string {
-  return INVITATION_STATUS_MESSAGES[status];
 }
 
 function resolveHttpStatus(status: InvitationStatus) {

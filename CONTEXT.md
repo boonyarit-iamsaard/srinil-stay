@@ -55,3 +55,10 @@ itself on startup. The latter, the **bootstrap** path, is how the first Staff
 comes into being before any Staff exists to invite them.
 
 _Avoid_: invite (as a noun), signup — Staff are invited, never self-registered.
+
+### Invitation expiry
+
+The window in which an Invitation's link stays valid before it lapses to the
+`expired` status — currently 12 hours from issue. It is a single policy: the
+duration and its human label ("12 hours") are owned together so the value used
+to compute `expiresAt` and the prose shown to people cannot drift apart.

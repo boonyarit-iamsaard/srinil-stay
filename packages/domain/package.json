@@ -5,6 +5,7 @@
   "type": "module",
   "exports": {
     "./invitation": "./src/invitation.ts",
+    "./invitation-expiry": "./src/invitation-expiry.ts",
     "./money": "./src/money.ts",
     "./role": "./src/role.ts",
     "./unit": "./src/unit.ts"

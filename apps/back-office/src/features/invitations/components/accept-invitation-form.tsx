@@ -1,4 +1,7 @@
-import { INVITATION_STATUS } from "@srinil-stay/domain/invitation";
+import {
+  INVITATION_STATUS,
+  invitationStatusMessage,
+} from "@srinil-stay/domain/invitation";
 import { env } from "@srinil-stay/env/back-office";
 import { Button } from "@srinil-stay/ui/components/button";
 import {
@@ -64,15 +67,15 @@ export function AcceptInvitationForm({
           status === INVITATION_STATUS.ACCEPTED ||
           status === INVITATION_STATUS.EXISTING_USER
         ) {
-          toast.error(
-            status === INVITATION_STATUS.ACCEPTED
-              ? "This invitation was already accepted. Please sign in."
-              : "An account already exists for this email. Please sign in."
-          );
+          toast.error(`${invitationStatusMessage(status)}. Please sign in.`);
           navigate({ to: "/login" });
           return;
         }
-        toast.error("This invitation link is no longer valid.");
+        toast.error(
+          status
+            ? invitationStatusMessage(status)
+            : "This invitation link is no longer valid."
+        );
         return;
       }
 

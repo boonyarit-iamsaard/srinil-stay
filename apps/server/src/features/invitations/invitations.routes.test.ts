@@ -119,7 +119,7 @@ describe("POST /invitations", () => {
     expect(res.status).toBe(409);
     expect(await res.json()).toEqual({
       status: INVITATION_STATUS.EXISTING_USER,
-      error: "A user with this email already exists",
+      error: "An account already exists for this email",
     });
   });
 });

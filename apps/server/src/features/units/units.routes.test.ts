@@ -100,8 +100,7 @@ describe("POST /units", () => {
       name: "Garden Bungalow",
       shortDescription: "Quiet standalone unit near the garden.",
       guestCapacity: 2,
-      basePriceMinor: 180_000,
-      currency: "THB",
+      basePrice: { amountMinor: 180_000, currency: "THB" },
       active: true,
     });
   });
@@ -175,16 +174,14 @@ describe("GET /units", () => {
           name: "Garden Bungalow",
           shortDescription: "Quiet standalone unit near the garden.",
           guestCapacity: 2,
-          basePriceMinor: 180_000,
-          currency: "THB",
+          basePrice: { amountMinor: 180_000, currency: "THB" },
           active: true,
         },
         {
           name: "Family Unit",
           shortDescription: "Two-bed unit for families.",
           guestCapacity: 4,
-          basePriceMinor: 260_000,
-          currency: "THB",
+          basePrice: { amountMinor: 260_000, currency: "THB" },
           active: true,
         },
       ],
@@ -219,8 +216,7 @@ describe("PATCH /units/:id", () => {
       name: "Canal Bungalow",
       shortDescription: "Updated unit beside the canal.",
       guestCapacity: 3,
-      basePriceMinor: 220_000,
-      currency: "THB",
+      basePrice: { amountMinor: 220_000, currency: "THB" },
       active: true,
     });
 
@@ -233,8 +229,7 @@ describe("PATCH /units/:id", () => {
           name: "Canal Bungalow",
           shortDescription: "Updated unit beside the canal.",
           guestCapacity: 3,
-          basePriceMinor: 220_000,
-          currency: "THB",
+          basePrice: { amountMinor: 220_000, currency: "THB" },
           active: true,
         },
       ],

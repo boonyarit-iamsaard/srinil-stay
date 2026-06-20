@@ -1,11 +1,12 @@
 import { randomBytes } from "node:crypto";
 
 import { auth } from "@srinil-stay/auth";
+import type { InvitationStatus } from "@srinil-stay/domain/invitation";
 import {
   INVITATION_STATUS,
-  type InvitationStatus,
   invitationLifecycleStatus,
 } from "@srinil-stay/domain/invitation";
+import { invitationExpiresAt } from "@srinil-stay/domain/invitation-expiry";
 import { STAFF_ROLE } from "@srinil-stay/domain/role";
 import { db } from "@srinil-stay/drizzle";
 import { users } from "@srinil-stay/drizzle/schema/auth";
@@ -13,8 +14,6 @@ import { invitations } from "@srinil-stay/drizzle/schema/invitations";
 import { and, eq, gt, isNull } from "drizzle-orm";
 
 import { sendInvitationEmail } from "./invitations.email";
-
-const EXPIRY_MS = 12 * 60 * 60 * 1000; // 12 hours
 
 type Result<T extends object = object> =
   | ({ ok: true; status: InvitationStatus } & T)
@@ -39,7 +38,7 @@ export async function createInvitation(input: {
   }
 
   const token = randomBytes(32).toString("base64url");
-  const expiresAt = new Date(Date.now() + EXPIRY_MS);
+  const expiresAt = invitationExpiresAt();
 
   const [invitation] = await db
     .insert(invitations)

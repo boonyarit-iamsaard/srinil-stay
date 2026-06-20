@@ -1,3 +1,4 @@
+import { INVITATION_EXPIRY } from "@srinil-stay/domain/invitation-expiry";
 import { env } from "@srinil-stay/env/server";
 
 import { sendMail } from "../../lib/mailer";
@@ -34,7 +35,7 @@ export function renderInvitationEmail(input: {
       <p>You've been invited to join the Srinil Stay team. Set a password to
       activate your account:</p>
       <p><a href="${escapeHtml(input.acceptUrl)}">Accept your invitation</a></p>
-      <p>This link expires in 12 hours.</p>
+      <p>This link expires in ${INVITATION_EXPIRY.humanLabel}.</p>
     `,
   };
 }

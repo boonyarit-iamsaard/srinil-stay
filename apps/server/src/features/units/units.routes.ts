@@ -1,4 +1,7 @@
-import { UnitValidationError } from "@srinil-stay/domain/unit";
+import {
+  UnitValidationError,
+  unitViewFromPersistence,
+} from "@srinil-stay/domain/unit";
 import { Hono } from "hono";
 import { z } from "zod";
 
@@ -43,7 +46,7 @@ unitsRoutes.post("/", async (c) => {
   try {
     const unit = await createUnit(parsed.data);
 
-    return c.json(unit, 201);
+    return c.json(unitViewFromPersistence(unit), 201);
   } catch (error) {
     if (error instanceof UnitValidationError) {
       return c.json({ error: "Invalid input" }, 400);
@@ -53,7 +56,9 @@ unitsRoutes.post("/", async (c) => {
   }
 });
 
-unitsRoutes.get("/", async (c) => c.json({ units: await listUnits() }));
+unitsRoutes.get("/", async (c) =>
+  c.json({ units: (await listUnits()).map(unitViewFromPersistence) })
+);
 
 unitsRoutes.patch("/:id", async (c) => {
   const parsed = unitDetailsSchema.safeParse(await parseJsonBody(c.req));
@@ -67,7 +72,7 @@ unitsRoutes.patch("/:id", async (c) => {
       return c.json({ error: "Unit not found" }, 404);
     }
 
-    return c.json(unit);
+    return c.json(unitViewFromPersistence(unit));
   } catch (error) {
     if (error instanceof UnitValidationError) {
       return c.json({ error: "Invalid input" }, 400);
@@ -91,5 +96,5 @@ unitsRoutes.patch("/:id/active", async (c) => {
     return c.json({ error: "Unit not found" }, 404);
   }
 
-  return c.json(unit);
+  return c.json(unitViewFromPersistence(unit));
 });

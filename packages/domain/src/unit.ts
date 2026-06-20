@@ -20,6 +20,15 @@ export interface Unit extends UnitDetails {
   active: boolean;
 }
 
+/**
+ * The shape a Unit takes across the wire to the apps: a persisted Unit plus its
+ * id, carrying `basePrice` as Money so callers never reassemble it from minor
+ * units themselves.
+ */
+export interface UnitView extends Unit {
+  id: string;
+}
+
 export interface UnitDetailsPersistence {
   basePriceMinor: number;
   currency: Currency;
@@ -78,6 +87,16 @@ export function setUnitActiveState(unit: Unit, active: boolean): Unit {
 
 export function unitFromPersistence(input: UnitPersistence): Unit {
   return {
+    ...createUnitDetails(input),
+    active: input.active,
+  };
+}
+
+export function unitViewFromPersistence(
+  input: UnitDetailsInput & { id: string; active: boolean }
+): UnitView {
+  return {
+    id: input.id,
     ...createUnitDetails(input),
     active: input.active,
   };
