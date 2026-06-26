@@ -17,6 +17,6 @@
   "devDependencies": {
     "@srinil-stay/config": "workspace:*",
     "typescript": "catalog:",
-    "vitest": "^4.1.8"
+    "vitest": "^4.1.9"
   }
 }
